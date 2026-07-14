@@ -18,10 +18,10 @@
 }
 
 :root {
-  --color-bg: #12110f;
-  --color-text: #e8e6e1;
-  --color-muted: #9b978d;
-  --color-accent: #e0653a;
+  --color-bg: #0a0a0d;
+  --color-text: #e7e8ec;
+  --color-muted: #9a9aa6;
+  --color-accent: #8b5cf6;
 
   --font-sans: "Public Sans", system-ui, sans-serif;
   --font-mono: "Inconsolata", monospace;
