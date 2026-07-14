@@ -1,0 +1,65 @@
+@font-face {
+  font-family: "Public Sans";
+  src: url("/fonts/PublicSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Public Sans";
+  src: url("/fonts/PublicSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inconsolata";
+  src: url("/fonts/Inconsolata-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+:root {
+  --color-bg: #12110f;
+  --color-text: #e8e6e1;
+  --color-muted: #9b978d;
+  --color-accent: #e0653a;
+
+  --font-sans: "Public Sans", system-ui, sans-serif;
+  --font-mono: "Inconsolata", monospace;
+
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 4rem;
+
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 2rem;
+  --space-lg: 4rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: var(--text-xl);
+  font-weight: 700;
+}

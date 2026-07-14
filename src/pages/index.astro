@@ -1,41 +1,82 @@
 ---
-
+import Layout from "../layouts/Layout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<!-- <link rel="icon" href="/favicon.ico" /> -->
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Enzo</title>
-	</head>
-	<body>
-        <div>
-            <p>v0.1.0-alpha</p>
-            <h1>Enzo</h1>
-            <h2>Open Source<br>Procedural Modelling</h2>
-            <p>Free, open source 3D procedural modeling. No licensing, no subscriptions.</p>
-        </div>
-        <div>
-            <button>Getting Started</button>
-            <button>Download</button>
-        </div>
-        <div>
-            <h2>WHAT IS ENZO</h2>
-        </div>
-        <div>
-            <h2>FEATURES</h2>
-        </div>
-        <div>
-            <h2>WHY ENZO</h2>
-        </div>
-        <div>
-            <h2>ROADMAP</h2>
-        </div>
-        <div>
-            <h2>FAQ</h2>
-        </div>
-	</body>
-</html>
+<Layout title="Enzo">
+	<main>
+		<div class="hero">
+			<p class="eyebrow">v0.1.0-alpha</p>
+			<h1>Enzo</h1>
+			<h2>Open Source<br />Procedural Modelling</h2>
+			<p class="lead">
+				Free, open source 3D procedural modeling. No licensing, no
+				subscriptions.
+			</p>
+			<div class="actions">
+				<button class="primary">Getting Started</button>
+				<button>Download</button>
+			</div>
+		</div>
+
+		<section><h2 class="section-label">WHAT IS ENZO</h2></section>
+		<section><h2 class="section-label">FEATURES</h2></section>
+		<section><h2 class="section-label">WHY ENZO</h2></section>
+		<section><h2 class="section-label">ROADMAP</h2></section>
+		<section><h2 class="section-label">FAQ</h2></section>
+	</main>
+</Layout>
+
+<style>
+	main {
+		max-width: 60rem;
+		margin: 0 auto;
+		padding: var(--space-lg) var(--space-md);
+	}
+
+	.hero {
+		padding-block: var(--space-lg);
+	}
+
+	.eyebrow {
+		font-family: var(--font-mono);
+		color: var(--color-accent);
+		margin-bottom: var(--space-sm);
+	}
+
+	.lead {
+		color: var(--color-muted);
+		font-size: var(--text-lg);
+		margin-top: var(--space-sm);
+		max-width: 32rem;
+	}
+
+	.actions {
+		display: flex;
+		gap: var(--space-sm);
+		margin-top: var(--space-md);
+	}
+
+	button {
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		padding: var(--space-xs) var(--space-md);
+		border: 1px solid var(--color-muted);
+		border-radius: 6px;
+		background: transparent;
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	button.primary {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-bg);
+		font-weight: 700;
+	}
+
+	.section-label {
+		font-family: var(--font-mono);
+		color: var(--color-muted);
+		margin-top: var(--space-lg);
+	}
+</style>
