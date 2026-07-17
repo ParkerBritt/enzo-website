@@ -18,7 +18,7 @@
 }
 
 :root {
-  --color-bg: #0a0a0d;
+  --color-bg: #19191f;
   --color-text: #e7e8ec;
   --color-muted: #9a9aa6;
   --color-accent: #8b5cf6;
@@ -42,6 +42,11 @@
 * {
   box-sizing: border-box;
   margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
