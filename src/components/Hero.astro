@@ -1,0 +1,92 @@
+---
+---
+
+<div class="hero">
+	<div class="section-inner hero-grid">
+		<div class="hero-copy">
+			<p class="eyebrow">v0.1.0-alpha</p>
+			<h1>Enzo</h1>
+			<h2>Procedural Modelling</h2>
+			<p class="lead">
+				Free, open source 3D procedural modeling. No licensing, no
+				subscriptions.
+			</p>
+			<div class="actions">
+				<button class="primary">Getting Started</button>
+				<button>Download</button>
+			</div>
+		</div>
+		<div class="hero-media">
+			<span>Video Placeholder</span>
+		</div>
+	</div>
+</div>
+
+<style>
+	.hero {
+		padding-block: var(--space-lg);
+	}
+
+	.hero-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-lg);
+		align-items: center;
+	}
+
+	.hero-media {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		aspect-ratio: 16 / 10;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-panel);
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+	}
+
+	.eyebrow {
+		font-family: var(--font-mono);
+		color: var(--color-accent);
+		margin-bottom: var(--space-sm);
+	}
+
+	.lead {
+		color: var(--color-muted);
+		font-size: var(--text-lg);
+		margin-top: var(--space-sm);
+		max-width: 32rem;
+	}
+
+	.actions {
+		display: flex;
+		gap: var(--space-sm);
+		margin-top: var(--space-md);
+	}
+
+	button {
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		padding: var(--space-xs) var(--space-md);
+		border: 1px solid var(--color-muted);
+		border-radius: 6px;
+		background: transparent;
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	button.primary {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-bg);
+		font-weight: 700;
+	}
+
+	@media (max-width: 48rem) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

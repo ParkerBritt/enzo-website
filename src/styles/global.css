@@ -69,3 +69,23 @@ h2 {
   font-size: var(--text-xl);
   font-weight: 700;
 }
+
+.section-inner {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding-inline: var(--space-md);
+}
+
+/* Every other section gets a lighter background so you can tell them apart. */
+section {
+  padding-block: var(--space-lg);
+}
+
+section:nth-of-type(odd) {
+  background: var(--color-panel);
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  color: var(--color-muted);
+}
