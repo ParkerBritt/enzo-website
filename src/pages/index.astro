@@ -5,36 +5,57 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Enzo">
 	<main>
 		<div class="hero">
-			<p class="eyebrow">v0.1.0-alpha</p>
-            <h1>Enzo</h1>
-            <h2>Procedural Modelling</h2>
-			<p class="lead">
-				Free, open source 3D procedural modeling. No licensing, no
-				subscriptions.
-			</p>
-			<div class="actions">
-				<button class="primary">Getting Started</button>
-				<button>Download</button>
+			<div class="section-inner">
+				<p class="eyebrow">v0.1.0-alpha</p>
+				<h1>Enzo</h1>
+				<h2>Procedural Modelling</h2>
+				<p class="lead">
+					Free, open source 3D procedural modeling. No licensing, no
+					subscriptions.
+				</p>
+				<div class="actions">
+					<button class="primary">Getting Started</button>
+					<button>Download</button>
+				</div>
 			</div>
 		</div>
 
-		<section><h2 class="section-label">WHAT IS ENZO</h2></section>
-		<section id="features"><h2 class="section-label">FEATURES</h2></section>
-		<section><h2 class="section-label">WHY ENZO</h2></section>
-		<section><h2 class="section-label">ROADMAP</h2></section>
-		<section><h2 class="section-label">FAQ</h2></section>
+		<section>
+			<div class="section-inner"><h2 class="section-label">WHAT IS ENZO</h2></div>
+		</section>
+		<section id="features">
+			<div class="section-inner"><h2 class="section-label">FEATURES</h2></div>
+		</section>
+		<section>
+			<div class="section-inner"><h2 class="section-label">WHY ENZO</h2></div>
+		</section>
+		<section>
+			<div class="section-inner"><h2 class="section-label">ROADMAP</h2></div>
+		</section>
+		<section>
+			<div class="section-inner"><h2 class="section-label">FAQ</h2></div>
+		</section>
 	</main>
 </Layout>
 
 <style>
-	main {
+	.section-inner {
 		max-width: 60rem;
 		margin: 0 auto;
-		padding: var(--space-lg) var(--space-md);
+		padding-inline: var(--space-md);
 	}
 
 	.hero {
 		padding-block: var(--space-lg);
+	}
+
+	/* Every other section gets a lighter background so you can tell them apart. */
+	section {
+		padding-block: var(--space-lg);
+	}
+
+	section:nth-of-type(odd) {
+		background: var(--color-panel);
 	}
 
 	.eyebrow {
@@ -77,6 +98,5 @@ import Layout from "../layouts/Layout.astro";
 	.section-label {
 		font-family: var(--font-mono);
 		color: var(--color-muted);
-		margin-top: var(--space-lg);
 	}
 </style>
