@@ -1,0 +1,78 @@
+---
+const reasons = [
+    // TODO: decide if I want to mention houdini or keep it more vague
+	{
+    title: "Completely free, no catches.",
+		description:
+        "Houdini Core costs $4,995 every year. To stop paying means you lose access to the software and effectively to your own work. Enzo is GPL-3.0. You own your tools permanently, commercially, without conditions.",
+	},
+	{
+		title: "Connect anything to anything.",
+		description:
+			"In Houdini, geometry, objects, volumes, and heightfields live in separate contexts. You can't copy a camera to points. You can't drive a heightfield with a noise node. The power of node graphs is creative mixing. Enzo has one unified context so you're never blocked by an arbitrary wall.",
+	},
+	{
+		title: "Embed it without the licensing headache.",
+		description:
+        "Houdini Engine, the product for embedding procedural tools in game runtimes, is a separate, licensed product. Enzo's engine is just a library. Drop it into a game, a custom tool, or a pipeline with no additional cost or approval from anyone.",
+	},
+];
+---
+
+<section>
+	<div class="section-inner">
+		<h2 class="section-label">WHY ENZO</h2>
+		<div class="reasons">
+			{
+				reasons.map((reason) => (
+					<div class="reason-row">
+						<h3>{reason.title}</h3>
+						<p>{reason.description}</p>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.reasons {
+		margin-top: var(--space-md);
+	}
+
+	.reason-row {
+		display: grid;
+		grid-template-columns: 1fr 2fr;
+		gap: var(--space-md);
+		padding-block: var(--space-md);
+		border-top: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.reason-row:last-child {
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.reason-row h3 {
+		font-size: var(--text-lg);
+		font-weight: 700;
+	}
+
+	/* Vertical divider between the title and description columns. */
+	.reason-row p {
+		color: var(--color-muted);
+		padding-left: var(--space-md);
+		border-left: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	@media (max-width: 48rem) {
+		.reason-row {
+			grid-template-columns: 1fr;
+			gap: var(--space-sm);
+		}
+
+		.reason-row p {
+			padding-left: 0;
+			border-left: none;
+		}
+	}
+</style>
