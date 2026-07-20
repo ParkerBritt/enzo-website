@@ -5,17 +5,22 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Enzo">
 	<main>
 		<div class="hero">
-			<div class="section-inner">
-				<p class="eyebrow">v0.1.0-alpha</p>
-				<h1>Enzo</h1>
-				<h2>Procedural Modelling</h2>
-				<p class="lead">
-					Free, open source 3D procedural modeling. No licensing, no
-					subscriptions.
-				</p>
-				<div class="actions">
-					<button class="primary">Getting Started</button>
-					<button>Download</button>
+			<div class="section-inner hero-grid">
+				<div class="hero-copy">
+					<p class="eyebrow">v0.1.0-alpha</p>
+					<h1>Enzo</h1>
+					<h2>Procedural Modelling</h2>
+					<p class="lead">
+						Free, open source 3D procedural modeling. No licensing, no
+						subscriptions.
+					</p>
+					<div class="actions">
+						<button class="primary">Getting Started</button>
+						<button>Download</button>
+					</div>
+				</div>
+				<div class="hero-media">
+					<span>Video Placeholder</span>
 				</div>
 			</div>
 		</div>
@@ -40,13 +45,39 @@ import Layout from "../layouts/Layout.astro";
 
 <style>
 	.section-inner {
-		max-width: 60rem;
+		max-width: 75rem;
 		margin: 0 auto;
 		padding-inline: var(--space-md);
 	}
 
 	.hero {
 		padding-block: var(--space-lg);
+	}
+
+	.hero-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-lg);
+		align-items: center;
+	}
+
+	.hero-media {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		aspect-ratio: 16 / 10;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-panel);
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+	}
+
+	@media (max-width: 48rem) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	/* Every other section gets a lighter background so you can tell them apart. */
