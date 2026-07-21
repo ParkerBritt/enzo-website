@@ -24,10 +24,10 @@ const columns = [
 		status: "PLANNED",
 		state: "planned",
 		items: [
-            "Vulkan viewport rewrite",
+            "Improved viewport (Vulkan rewrite)",
             "Timeline",
 			"Simulation nodes",
-			"Custom node authoring",
+			"User node authoring",
 		],
 	},
 ];
@@ -129,6 +129,19 @@ const columns = [
 	li {
 		padding-block: var(--space-sm);
 		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+	}
+
+	/* Released items get a check so shipped work reads as done. */
+	.released li {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-xs);
+	}
+
+	.released li::before {
+		content: "✓";
+		color: var(--color-text);
+		font-weight: 700;
 	}
 
 	@media (max-width: 48rem) {
