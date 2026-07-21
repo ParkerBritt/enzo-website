@@ -6,6 +6,18 @@
 }
 @font-face {
   font-family: "Public Sans";
+  src: url("/fonts/PublicSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Public Sans";
+  src: url("/fonts/PublicSans-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Public Sans";
   src: url("/fonts/PublicSans-Bold.ttf") format("truetype");
   font-weight: 700;
   font-display: swap;
@@ -14,6 +26,24 @@
   font-family: "Inconsolata";
   src: url("/fonts/Inconsolata-Regular.ttf") format("truetype");
   font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inconsolata";
+  src: url("/fonts/Inconsolata-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inconsolata";
+  src: url("/fonts/Inconsolata-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inconsolata";
+  src: url("/fonts/Inconsolata-Bold.ttf") format("truetype");
+  font-weight: 700;
   font-display: swap;
 }
 
@@ -86,6 +116,8 @@ section:nth-of-type(odd) {
 }
 
 .section-label {
+  font-weight: 900;
   font-family: var(--font-mono);
-  color: var(--color-muted);
+  font-size: var(--text-2xl);
+  color: var(--color-text);
 }
