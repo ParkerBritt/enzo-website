@@ -52,7 +52,7 @@
   --color-panel: #1e1e26;
   --color-text: #e7e8ec;
   --color-muted: #9a9aa6;
-  --color-accent: #8b5cf6;
+  --color-accent: rgb(150, 130, 255);
 
   --font-sans: "Public Sans", system-ui, sans-serif;
   --font-mono: "Inconsolata", monospace;
