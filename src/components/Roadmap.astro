@@ -1,0 +1,144 @@
+---
+const columns = [
+	{
+		status: "RELEASED",
+		version: "v0.2.0-alpha",
+		state: "released",
+		items: [
+            "Parameter expressions",
+            "Ramp parameter",
+            "Cameras",
+            "Undo / redo",
+		],
+	},
+	{
+		status: "IN PROGRESS",
+		state: "in-progress",
+        items: [
+            "GUI rewrite",
+            "Async cooking",
+            "Sweep node",
+        ],
+	},
+	{
+		status: "PLANNED",
+		state: "planned",
+		items: [
+            "Vulkan viewport rewrite",
+            "Timeline",
+			"Simulation nodes",
+			"Custom node authoring",
+		],
+	},
+];
+---
+
+<section>
+	<div class="section-inner">
+		<h2 class="section-label">ROADMAP</h2>
+		<div class="columns">
+			{
+				columns.map((column) => (
+					<div class:list={["column", column.state]}>
+						<div class="column-head">
+							<span class="marker" />
+							<span class="status">{column.status}</span>
+							{column.version && <span class="version">{column.version}</span>}
+						</div>
+						<ul>
+							{column.items.map((item) => (
+								<li>{item}</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.columns {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-md);
+		margin-top: var(--space-md);
+	}
+
+	/* Divider between columns, dropped on the first one. */
+	.column + .column {
+		padding-left: var(--space-md);
+		border-left: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.column-head {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		padding-bottom: var(--space-sm);
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.status {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.version {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		color: var(--color-muted);
+		background: color-mix(in srgb, var(--color-text) 8%, transparent);
+		padding: 0 var(--space-xs);
+		border-radius: 4px;
+	}
+
+	.marker {
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	/* Filled dot for shipped work, hollow ring for active, dashed for planned. */
+	.released .marker {
+		background: var(--color-text);
+	}
+
+	.in-progress .marker {
+		border: 2px solid var(--color-text);
+	}
+
+	.planned .marker {
+		border: 2px dashed var(--color-muted);
+	}
+
+	/* Planned work reads as dimmed until it lands. */
+	.planned .status,
+	.planned li {
+		color: var(--color-muted);
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+	}
+
+	li {
+		padding-block: var(--space-sm);
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+	}
+
+	@media (max-width: 48rem) {
+		.columns {
+			grid-template-columns: 1fr;
+		}
+
+		.column + .column {
+			padding-left: 0;
+			border-left: none;
+		}
+	}
+</style>
