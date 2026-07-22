@@ -30,12 +30,14 @@ const faqs = [
 		<div class="faqs">
 			{
 				faqs.map((faq) => (
-					<details class="faq" open={faq.open}>
+					<details class:list={["faq", { "is-open": faq.open }]} open={faq.open}>
 						<summary>
 							<span>{faq.question}</span>
 							<span class="chevron" aria-hidden="true" />
 						</summary>
-						<p>{faq.answer}</p>
+						<div class="faq-content">
+							<p>{faq.answer}</p>
+						</div>
 					</details>
 				))
 			}
@@ -59,7 +61,7 @@ const faqs = [
 	.faq {
 		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
 		border-radius: 12px;
-		background: var(--color-panel);
+		background: color-mix(in srgb, black 18%, transparent);
 		overflow: hidden;
 	}
 
@@ -90,11 +92,15 @@ const faqs = [
 	}
 
 	/* Chevron points up once the answer is expanded. */
-	.faq[open] .chevron {
+	.faq.is-open .chevron {
 		transform: rotate(-135deg);
 	}
 
-	.faq p {
+	.faq-content {
+		overflow: hidden;
+	}
+
+	.faq-content p {
 		color: var(--color-muted);
 		padding: 0 var(--space-md) var(--space-md);
 	}
@@ -105,3 +111,40 @@ const faqs = [
 		}
 	}
 </style>
+
+<script>
+	const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+	document.querySelectorAll(".faq").forEach((details) => {
+		const summary = details.querySelector("summary");
+		const content = details.querySelector(".faq-content");
+		let animation = null;
+
+		summary.addEventListener("click", (event) => {
+			if (prefersReducedMotion.matches) return;
+			if (!details.open) {
+				details.classList.add("is-open");
+				return;
+			}
+			event.preventDefault();
+			details.classList.remove("is-open");
+			animation?.cancel();
+			animation = content.animate(
+				{ height: [`${content.scrollHeight}px`, "0px"] },
+				{ duration: 200, easing: "ease-out" },
+			);
+			animation.onfinish = () => {
+				details.open = false;
+			};
+		});
+
+		details.addEventListener("toggle", () => {
+			if (!details.open || prefersReducedMotion.matches) return;
+			animation?.cancel();
+			animation = content.animate(
+				{ height: ["0px", `${content.scrollHeight}px`] },
+				{ duration: 200, easing: "ease-out" },
+			);
+		});
+	});
+</script>
