@@ -1,0 +1,103 @@
+---
+const faqs = [
+	{
+		question: "Is Enzo ready for production use?",
+        answer: "Not yet, Enzo is currently in early alpha meaning we're still getting the foudation solid before adding a lot of the nodes and features that make it comfortable to use. It's currently great to use for experimentation, but not production pipelines.",
+		open: true,
+	},
+	{
+		question: "What platforms are supported?",
+        answer: "Currently the main target is Linux, while you should be able to compile on Windows and Mac they are not yet officially supported.",
+	},
+	{
+		question: "Can I use Enzo commercially?",
+        answer: "Absolutely, Enzo is free and open source meaning you own the tools and anything you create with it.",
+	},
+	{
+		question: "Can I contribute?",
+        answer: "Enzo is open to contributions to those with experience. I'd just ask for no low effort AI contributions. To get started feel free to message me and we can find a good issue for you to work on.",
+	},
+];
+---
+
+<section id="faq">
+	<div class="section-inner">
+		<h2 class="section-label">FAQ</h2>
+		<div class="faqs">
+			{
+				faqs.map((faq) => (
+					<details class="faq" open={faq.open}>
+						<summary>
+							<span>{faq.question}</span>
+							<span class="chevron" aria-hidden="true" />
+						</summary>
+						<p>{faq.answer}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	h2 {
+		padding-bottom: var(--space-xs);
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.faqs {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		margin-top: var(--space-md);
+	}
+
+	.faq {
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-panel);
+		overflow: hidden;
+	}
+
+	summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-sm);
+		padding: var(--space-sm) var(--space-md);
+		font-size: var(--text-lg);
+		font-weight: 700;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.chevron {
+		flex-shrink: 0;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-right: 2px solid var(--color-muted);
+		border-bottom: 2px solid var(--color-muted);
+		transform: rotate(45deg);
+		transition: transform 0.2s ease;
+	}
+
+	/* Chevron points up once the answer is expanded. */
+	.faq[open] .chevron {
+		transform: rotate(-135deg);
+	}
+
+	.faq p {
+		color: var(--color-muted);
+		padding: 0 var(--space-md) var(--space-md);
+	}
+
+	@media (max-width: 48rem) {
+		summary {
+			font-size: var(--text-base);
+		}
+	}
+</style>
