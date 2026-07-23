@@ -45,7 +45,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		<title>{title} · Enzo Docs</title>
 		<ClientRouter />
 	</head>
-	<body transition:animate="none">
+	<body>
 		<DocsHeader activeTab={activeTab} />
 
 		<div class="docs-body">
