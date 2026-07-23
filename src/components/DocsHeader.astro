@@ -85,9 +85,9 @@ const tabs = [
 		max-width: 90rem;
 		margin: 0 auto;
 		padding-inline: var(--space-md);
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
-		gap: var(--space-lg);
 	}
 
 	.brand {
@@ -150,7 +150,7 @@ const tabs = [
 	}
 
 	.docs-header-actions {
-		margin-left: auto;
+		justify-self: end;
 		display: flex;
 		align-items: center;
 		gap: var(--space-sm);
@@ -226,6 +226,7 @@ const tabs = [
 		}
 		.docs-header-inner {
 			height: auto;
+			display: flex;
 			flex-wrap: wrap;
 			gap: var(--space-sm);
 		}
