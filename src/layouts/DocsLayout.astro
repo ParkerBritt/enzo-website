@@ -152,9 +152,15 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 					indicator.classList.remove("visible");
 					return;
 				}
+				const isFirstAppearance = !indicator.classList.contains("visible");
+				if (isFirstAppearance) indicator.style.transition = "none";
 				indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
 				indicator.style.height = `${activeLink.offsetHeight}px`;
 				indicator.classList.add("visible");
+				if (isFirstAppearance) {
+					indicator.offsetHeight;
+					indicator.style.transition = "";
+				}
 			}
 
 			let cleanupTocScrollSpy = () => {};
