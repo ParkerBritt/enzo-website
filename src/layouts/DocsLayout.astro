@@ -45,7 +45,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		<ClientRouter />
 	</head>
 	<body transition:animate="none">
-		<DocsHeader activeTab={activeTab} transition:persist="docs-header" />
+		<DocsHeader activeTab={activeTab} />
 
 		<div class="docs-body">
 			{
@@ -116,19 +116,96 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 				toc.length > 0 && (
 					<aside class="docs-toc">
 						<div class="toc-label">On this page</div>
-						<ul>
-							{toc.map((entry, i) => (
-								<li>
-									<a href={`#${entry.id}`} class:list={{ active: i === 0 }}>
-										{entry.label}
-									</a>
-								</li>
-							))}
-						</ul>
+						<div class="toc-list-wrap">
+							<div class="toc-indicator"></div>
+							<ul>
+								{toc.map((entry) => (
+									<li>
+										<a href={`#${entry.id}`}>{entry.label}</a>
+									</li>
+								))}
+							</ul>
+						</div>
 					</aside>
 				)
 			}
 		</div>
+
+		<script>
+			function updateActiveNavLinks() {
+				const pathname = location.pathname.replace(/\/$/, "") || "/";
+				document.querySelectorAll(".docs-sidebar a, .docs-tab").forEach((link) => {
+					const href = link.getAttribute("href");
+					if (!href) return;
+					link.classList.toggle("active", href.replace(/\/$/, "") === pathname);
+				});
+			}
+
+			let cleanupTocScrollSpy = () => {};
+
+			function setupTocScrollSpy() {
+				cleanupTocScrollSpy();
+
+				const tocLinks = [...document.querySelectorAll(".docs-toc a")];
+				const headings = tocLinks
+					.map((link) => document.getElementById(link.getAttribute("href").slice(1)))
+					.filter((heading) => heading !== null);
+				if (!headings.length) return;
+
+				const triggerLine = 112;
+				const indicator = document.querySelector(".toc-indicator");
+				let isClickScrolling = false;
+				let clickScrollTimer = null;
+
+				const setActive = (id) => {
+					let activeLink = null;
+					tocLinks.forEach((link) => {
+						const isActive = link.getAttribute("href") === `#${id}`;
+						link.classList.toggle("active", isActive);
+						if (isActive) activeLink = link;
+					});
+					if (indicator && activeLink) {
+						indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
+						indicator.style.height = `${activeLink.offsetHeight}px`;
+					}
+				};
+
+				const onScroll = () => {
+					if (isClickScrolling) {
+						clearTimeout(clickScrollTimer);
+						clickScrollTimer = setTimeout(() => {
+							isClickScrolling = false;
+						}, 100);
+						return;
+					}
+					let current = headings[0];
+					for (const heading of headings) {
+						if (heading.getBoundingClientRect().top <= triggerLine) current = heading;
+					}
+					setActive(current.id);
+				};
+
+				const onLinkClick = (event) => {
+					isClickScrolling = true;
+					setActive(event.currentTarget.getAttribute("href").slice(1));
+				};
+
+				document.addEventListener("scroll", onScroll, { passive: true });
+				tocLinks.forEach((link) => link.addEventListener("click", onLinkClick));
+				onScroll();
+
+				cleanupTocScrollSpy = () => {
+					clearTimeout(clickScrollTimer);
+					document.removeEventListener("scroll", onScroll);
+					tocLinks.forEach((link) => link.removeEventListener("click", onLinkClick));
+				};
+			}
+
+			document.addEventListener("astro:page-load", () => {
+				updateActiveNavLinks();
+				setupTocScrollSpy();
+			});
+		</script>
 	</body>
 </html>
 
@@ -386,19 +463,43 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		gap: 0.1rem;
 	}
 
+	.toc-list-wrap {
+		position: relative;
+	}
+
+	.toc-list-wrap::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 2px;
+		background: color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.toc-indicator {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 2px;
+		background: var(--color-accent);
+		transition:
+			transform 0.2s ease,
+			height 0.2s ease;
+	}
+
 	.docs-toc a {
 		display: block;
 		padding: 0.3rem 0 0.3rem 0.6rem;
-		border-left: 2px solid color-mix(in srgb, var(--color-text) 12%, transparent);
 		font-size: 0.8125rem;
 		color: var(--color-muted);
 		text-decoration: none;
+		transition: color 0.15s ease;
 	}
 
 	.docs-toc a.active {
 		color: var(--color-text);
 		font-weight: 600;
-		border-left-color: var(--color-accent);
 	}
 
 	@media (max-width: 68rem) {
