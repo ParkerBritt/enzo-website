@@ -93,11 +93,12 @@ const faqs = [
 
 	/* Chevron points up once the answer is expanded. */
 	.faq.is-open .chevron {
-		transform: rotate(-135deg);
+		transform: rotate(225deg);
 	}
 
 	.faq-content {
 		overflow: hidden;
+		contain: layout paint;
 	}
 
 	.faq-content p {
@@ -113,6 +114,7 @@ const faqs = [
 </style>
 
 <script>
+	const ANIMATION_DURATION = 100;
 	const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 	document.querySelectorAll(".faq").forEach((details) => {
@@ -131,7 +133,7 @@ const faqs = [
 			animation?.cancel();
 			animation = content.animate(
 				{ height: [`${content.scrollHeight}px`, "0px"] },
-				{ duration: 200, easing: "ease-out" },
+				{ duration: ANIMATION_DURATION, easing: "ease-out" },
 			);
 			animation.onfinish = () => {
 				details.open = false;
@@ -143,7 +145,7 @@ const faqs = [
 			animation?.cancel();
 			animation = content.animate(
 				{ height: ["0px", `${content.scrollHeight}px`] },
-				{ duration: 200, easing: "ease-out" },
+				{ duration: ANIMATION_DURATION, easing: "ease-out" },
 			);
 		});
 	});
