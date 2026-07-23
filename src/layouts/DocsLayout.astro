@@ -51,8 +51,9 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		<div class:list={["docs-body", { "has-sidebar": activeTab === "Guide" }]}>
 			{
 				activeTab === "Guide" && (
-					<aside class="docs-sidebar" transition:persist="docs-sidebar">
+					<aside class="docs-sidebar" transition:persist="docs-sidebar" transition:animate="none">
 						<nav>
+							<div class="sidebar-indicator"></div>
 							{guideNav.map((group) => (
 								<details open>
 									<summary>{group.label}</summary>
@@ -140,6 +141,20 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 					if (!href) return;
 					link.classList.toggle("active", href.replace(/\/$/, "") === pathname);
 				});
+				updateSidebarIndicator();
+			}
+
+			function updateSidebarIndicator() {
+				const indicator = document.querySelector(".sidebar-indicator");
+				const activeLink = document.querySelector(".docs-sidebar a.active");
+				if (!indicator) return;
+				if (!activeLink) {
+					indicator.classList.remove("visible");
+					return;
+				}
+				indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
+				indicator.style.height = `${activeLink.offsetHeight}px`;
+				indicator.classList.add("visible");
 			}
 
 			let cleanupTocScrollSpy = () => {};
@@ -246,6 +261,29 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		border-right: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
 	}
 
+	.docs-sidebar nav {
+		position: relative;
+	}
+
+	.sidebar-indicator {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		border-radius: 6px;
+		background: color-mix(in srgb, var(--color-text) 6%, transparent);
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 0.15s ease;
+	}
+
+	.sidebar-indicator.visible {
+		opacity: 1;
+	}
+
 	.docs-sidebar summary {
 		cursor: pointer;
 		font-size: 0.6875rem;
@@ -276,6 +314,8 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	}
 
 	.docs-sidebar a {
+		position: relative;
+		z-index: 1;
 		display: block;
 		padding: 0.4rem 0.6rem 0.4rem 1.25rem;
 		border-radius: 6px;
@@ -291,7 +331,6 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	.docs-sidebar a.active {
 		color: var(--color-text);
 		font-weight: 600;
-		background: color-mix(in srgb, var(--color-text) 6%, transparent);
 	}
 
 	.docs-content {
