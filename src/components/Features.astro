@@ -31,7 +31,7 @@ const features = [
 
 <section id="features">
 	<div class="section-inner">
-		<h2 class="section-label">FEATURES</h2>
+		<!-- <h2 class="section-label">FEATURES</h2> -->
 		<div class="features">
 			{
 				features.map((feature) => (
@@ -130,4 +130,9 @@ const features = [
 			order: 0;
 		}
 	}
+
+    section#features {
+        padding-top: 0;
+        padding-bottom: var(--space-md);
+    }
 </style>
