@@ -48,7 +48,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	<body>
 		<DocsHeader activeTab={activeTab} />
 
-		<div class="docs-body">
+		<div class:list={["docs-body", { "has-sidebar": activeTab === "Guide" }]}>
 			{
 				activeTab === "Guide" && (
 					<aside class="docs-sidebar" transition:persist="docs-sidebar">
@@ -211,7 +211,16 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 </html>
 
 <style>
+	:global(:root) {
+		--docs-header-height: 4.75rem;
+	}
+
+	body {
+		padding-top: var(--docs-header-height);
+	}
+
 	.docs-body {
+		--docs-sidebar-width: 16rem;
 		display: flex;
 		align-items: flex-start;
 		width: 100%;
@@ -221,14 +230,20 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		gap: var(--space-lg);
 	}
 
+	.docs-body.has-sidebar {
+		padding-left: calc(var(--space-md) + var(--docs-sidebar-width));
+	}
+
 	.docs-sidebar {
-		flex: none;
-		width: 15rem;
-		position: sticky;
-		top: 5.5rem;
-		max-height: calc(100vh - 6rem);
+		position: fixed;
+		left: 0;
+		top: var(--docs-header-height);
+		bottom: 0;
+		width: var(--docs-sidebar-width);
 		overflow-y: auto;
-		padding-block: var(--space-md);
+		padding: var(--space-md);
+		background: color-mix(in srgb, var(--color-text) 3%, transparent);
+		border-right: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
 	}
 
 	.docs-sidebar summary {
@@ -442,7 +457,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		flex: none;
 		width: 11rem;
 		position: sticky;
-		top: 5.5rem;
+		top: var(--docs-header-height);
 		padding-block: var(--space-lg);
 		align-self: flex-start;
 	}
@@ -510,14 +525,25 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	}
 
 	@media (max-width: 48rem) {
+		:global(:root) {
+			--docs-header-height: 7rem;
+		}
+
 		.docs-body {
 			flex-direction: column;
+		}
+
+		.docs-body.has-sidebar {
+			padding-left: var(--space-md);
 		}
 
 		.docs-sidebar {
 			position: static;
 			width: 100%;
-			max-height: none;
+			overflow: visible;
+			margin-inline: calc(-1 * var(--space-md));
+			border-right: none;
+			border-block: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
 		}
 
 		.docs-content {

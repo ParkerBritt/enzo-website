@@ -67,10 +67,12 @@ const tabs = [
 
 <style>
 	.docs-header {
-		position: sticky;
+		position: fixed;
 		top: 0;
+		left: 0;
+		right: 0;
 		z-index: 10;
-		padding-block: var(--space-sm);
+		height: var(--docs-header-height, 4.75rem);
 		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
@@ -79,6 +81,7 @@ const tabs = [
 
 	.docs-header-inner {
 		width: 100%;
+		height: 100%;
 		max-width: 90rem;
 		margin: 0 auto;
 		padding-inline: var(--space-md);
@@ -217,7 +220,12 @@ const tabs = [
 	}
 
 	@media (max-width: 48rem) {
+		.docs-header {
+			height: auto;
+			padding-block: var(--space-sm);
+		}
 		.docs-header-inner {
+			height: auto;
 			flex-wrap: wrap;
 			gap: var(--space-sm);
 		}
