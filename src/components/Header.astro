@@ -12,7 +12,15 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
         </a>
         <nav>
             <a href="https://github.com/parkerbritt/enzo/releases/latest">Download</a>
-            <a href="/docs">Docs</a>
+            <div class="docs-menu">
+                <a href="/docs">Docs</a>
+                <div class="docs-dropdown">
+                    <a href="/docs/user-guide">User Guide</a>
+                    <a href="/docs/nodes">Nodes</a>
+                    <a href="/docs/daslang">Daslang</a>
+                    <a href="/docs/cpp">C++</a>
+                </div>
+            </div>
             <a href="#features">Features</a>
             <a href="#roadmap">Roadmap</a>
         </nav>
@@ -66,6 +74,57 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
 
 	nav a:hover {
 		color: var(--color-text);
+	}
+
+	.docs-menu {
+		position: relative;
+	}
+
+    /* Invisible bridge to prevent popup from dissapearing when moving the mouse down. */
+	.docs-menu::after {
+		content: "";
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		height: var(--space-xs);
+	}
+
+	.docs-dropdown {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		display: flex;
+		flex-direction: column;
+		min-width: 10rem;
+		padding: var(--space-xs);
+		margin-top: var(--space-xs);
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-bg);
+		box-shadow: 0 8px 24px color-mix(in srgb, black 20%, transparent);
+		opacity: 0;
+		visibility: hidden;
+		transform: translateX(-50%) translateY(-4px);
+		transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+	}
+
+	.docs-menu:hover .docs-dropdown,
+	.docs-menu:focus-within .docs-dropdown {
+		opacity: 1;
+		visibility: visible;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	.docs-dropdown a {
+		padding: var(--space-xs) var(--space-sm);
+		border-radius: 8px;
+		white-space: nowrap;
+	}
+
+	.docs-dropdown a:hover {
+		background: color-mix(in srgb, var(--color-text) 6%, transparent);
 	}
 
 	.source {
