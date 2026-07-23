@@ -115,6 +115,15 @@ section:nth-of-type(odd) {
   background: var(--color-panel);
 }
 
+section:nth-of-type(even) {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-text) 15%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 35px 35px;
+}
+
 .section-label {
   font-weight: 900;
   font-family: var(--font-mono);
