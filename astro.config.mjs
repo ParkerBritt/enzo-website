@@ -2,4 +2,13 @@
 import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+	redirects: {
+		"/docs/guide": "/docs/guide/install-build",
+	},
+	markdown: {
+		shikiConfig: {
+			theme: "github-dark-dimmed",
+		},
+	},
+});

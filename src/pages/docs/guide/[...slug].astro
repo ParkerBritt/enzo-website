@@ -1,0 +1,20 @@
+---
+import { getCollection, render } from "astro:content";
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+
+export async function getStaticPaths() {
+	const pages = await getCollection("guide");
+	return pages.map((page) => ({ params: { slug: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content, headings } = await render(page);
+
+const toc = headings.filter((heading) => heading.depth === 2).map((heading) => ({ id: heading.slug, label: heading.text }));
+---
+
+<DocsLayout title={page.data.title} toc={toc}>
+	<h1>{page.data.title}</h1>
+	{page.data.description && <p class="lead">{page.data.description}</p>}
+	<Content />
+</DocsLayout>
