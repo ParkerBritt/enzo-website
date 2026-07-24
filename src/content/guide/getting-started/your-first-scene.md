@@ -1,7 +1,7 @@
 ---
 title: Your First Scene
 section: Getting Started
-order: 20
+order: 40
 description: Build a scattered mountain in four nodes.
 ---
 

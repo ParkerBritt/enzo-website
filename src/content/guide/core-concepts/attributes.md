@@ -1,7 +1,7 @@
 ---
 title: Attributes
 section: Core Concepts
-order: 50
+order: 70
 ---
 
 This page hasn't been written yet.

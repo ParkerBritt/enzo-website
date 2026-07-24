@@ -8,7 +8,7 @@ description: Get Enzo compiled and running on your machine.
 ## Prerequisites
 
 - CMake 3.20+
-- Qt 6.4+ (Qt Quick, Qt 3D)
+- Qt 6 (Core, Widgets, Quick/QML, OpenGL)
 - C++17 compiler — GCC 11+, Clang 14+, or MSVC 2022+
 
 ## Build from source

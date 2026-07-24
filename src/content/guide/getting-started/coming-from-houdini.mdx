@@ -1,0 +1,42 @@
+---
+title: Coming from Houdini
+section: Getting Started
+order: 50
+description: A translation for experienced Houdini users.
+---
+
+import Callout from "../../../components/mdx/Callout.astro";
+
+## Primitives
+
+Houdini stores everything in attributes across four classes, `point`, `vertex`, `primitive`, and `detail`. Primitives themselves are messier. Polygons, volumes, heightfields, and packed primitives all exist side by side, but polygons are clearly first class and everything else feels bolted on.
+
+Enzo splits attributes and primitives in a similar way to USD. Attributes live inside primitives, not the other way around. That split was motivated by three things.
+
+1. **Unified context.** Making primitives their own concept means cameras, lights, heightfields, volumes, and meshes can all live in the same system. Each one is first class, so each one can own its own data properly.
+2. **Clear hierarchy.** Data lives in a structure you can navigate, not a flat blob of values.
+3. **Easier interop.** The same hierarchy that organizes your data maps cleanly onto USD or Maya on export.
+
+{/* TODO: add screenshot of this */}
+
+## Single context
+
+Houdini splits work across contexts. SOPs for geometry, DOPs for simulation, COPs for images, LOPs for USD. Each one has its own network and its own rules about what can live there.
+
+That split doesn't exist in Enzo. There's a single node graph, and anything that can carry attributes, a mesh, a point cloud, a camera, can sit in it and wire into anything else.
+
+## Benefits of the unified context
+
+Because primitives aren't segregated by context, things that require workarounds in Houdini come for free in Enzo. A **Camera** is a primitive like any other. It has a transform and cooks through the same graph as your geometry. That means a node like **Copy to Points** doesn't care whether what you're copying is a mesh or a camera. Building a multi-cam rig or previewing a camera path is just Copy to Points doing what it already does, not a special case.
+
+All nodes are attribute agnostic, so anything that modifies attributes works on any primitive. The same noise that drives a mesh's displacement could just as easily drive a camera's focal length or a light's brightness. It's one system, not a special integration per primitive type.
+
+## Terminology
+
+Houdini's `ch()` / `chi()` / `chs()` map directly onto Enzo's `prm()` / `prmI()` / `prmS()`, reading another node's parameter by path, split by type. Expressions are written in [DasLang](/docs/guide/working-with-daslang) rather than HScript or VEX. HScript and VEX are two separate, somewhat inconsistent languages, and DasLang replaces both with one consistent language across the whole software.
+
+DasLang is a thin abstraction over C++, which makes it fast and versatile. It's also feature complete in ways HScript and VEX aren't, including proper classes and functions.
+
+<Callout type="note">
+Enzo is in early stages and solo developed, so plenty of Houdini familiar features and muscle memory won't be implemented yet. See [Limitations](/docs/guide/limitations) for the full list.
+</Callout>

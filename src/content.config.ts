@@ -4,7 +4,7 @@ import path from "node:path";
 
 const guide = defineCollection({
 	loader: glob({
-		pattern: "**/*.md",
+		pattern: "**/*.{md,mdx}",
 		base: "./src/content/guide",
 		// Slug is just the filename. Folder nesting is organizational only.
 		generateId: ({ entry }) => path.parse(entry).name,
