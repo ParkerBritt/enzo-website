@@ -1,5 +1,6 @@
 ---
 import GithubIcon from "../assets/github.svg";
+import { BookOpen, Braces, FileCode, Search, Terminal, Workflow } from "@lucide/astro";
 
 interface Props {
 	activeTab?: string;
@@ -10,11 +11,11 @@ const { activeTab } = Astro.props;
 const repoUrl = "https://github.com/parkerbritt/enzo";
 
 const tabs = [
-	{ label: "Guide", href: "/docs/guide", kind: "internal" },
-	{ label: "Nodes", href: "/docs/nodes", kind: "internal" },
-	{ label: "DasLang", href: "/docs/daslang", kind: "internal" },
-	{ label: "Python", kind: "soon" },
-	{ label: "C++", href: "https://parkerbritt.github.io/enzo/annotated.html", kind: "external" },
+	{ label: "Guide", href: "/docs/guide", kind: "internal", icon: BookOpen },
+	{ label: "Nodes", href: "/docs/nodes", kind: "internal", icon: Workflow },
+	{ label: "DasLang", href: "/docs/daslang", kind: "internal", icon: Terminal },
+	{ label: "Python", kind: "soon", icon: FileCode },
+	{ label: "C++", href: "https://parkerbritt.github.io/enzo/annotated.html", kind: "external", icon: Braces },
 ] as const;
 ---
 
@@ -31,6 +32,7 @@ const tabs = [
 					if (tab.kind === "soon") {
 						return (
 							<span class="docs-tab soon">
+								<tab.icon size={16} aria-hidden="true" />
 								{tab.label}
 								<span class="soon-badge">Soon</span>
 							</span>
@@ -39,12 +41,14 @@ const tabs = [
 					if (tab.kind === "external") {
 						return (
 							<a class="docs-tab" href={tab.href} target="_blank" rel="noopener">
+								<tab.icon size={16} aria-hidden="true" />
 								{tab.label} <span class="ext">↗</span>
 							</a>
 						);
 					}
 					return (
 						<a class:list={["docs-tab", { active: tab.label === activeTab }]} href={tab.href}>
+							<tab.icon size={16} aria-hidden="true" />
 							{tab.label}
 						</a>
 					);
@@ -54,7 +58,7 @@ const tabs = [
 
 		<div class="docs-header-actions">
 			<div class="docs-search">
-				<span class="icon">⌕</span>
+				<Search class="icon" size={16} aria-hidden="true" />
 				<input type="text" placeholder="Search all docs…" disabled />
 				<span class="kbd">⌘K</span>
 			</div>
