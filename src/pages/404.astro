@@ -1,0 +1,85 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="404 | Enzo">
+	<main class="notfound">
+		<div class="section-inner">
+			<p class="eyebrow">404</p>
+			<h1>Page not found</h1>
+			<p class="lead">
+				That page doesn't exist, or it moved somewhere else.
+			</p>
+			<div class="actions">
+				<a href="/"><button class="primary">Back Home</button></a>
+				<a href="/docs/guide"><button>Read the Docs</button></a>
+			</div>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	.notfound {
+		display: flex;
+		align-items: center;
+		min-height: calc(100vh - 8rem);
+		text-align: center;
+
+		/* Dot grid */
+		background-image: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--color-text) 15%, transparent) 1px,
+			transparent 1.5px
+		);
+		background-size: 35px 35px;
+	}
+
+	.eyebrow {
+		font-family: var(--font-mono);
+		font-size: var(--text-2xl);
+		font-weight: 700;
+		color: var(--color-accent);
+		margin-bottom: var(--space-sm);
+	}
+
+	.lead {
+		color: var(--color-muted);
+		font-size: var(--text-lg);
+		margin-top: var(--space-sm);
+	}
+
+	.actions {
+		display: flex;
+		justify-content: center;
+		gap: var(--space-sm);
+		margin-top: var(--space-md);
+	}
+
+	button {
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		padding: var(--space-xs) var(--space-md);
+		border: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
+		border-radius: 6px;
+		background: var(--color-panel);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
+	button:hover {
+		border-color: color-mix(in srgb, var(--color-text) 25%, transparent);
+		background: color-mix(in srgb, var(--color-text) 8%, transparent);
+	}
+
+	button.primary {
+		background: var(--color-accent);
+		border-color: var(--color-accent);
+		color: var(--color-bg);
+		font-weight: 700;
+	}
+
+	button.primary:hover {
+		background: color-mix(in srgb, var(--color-accent) 95%, white);
+		border-color: color-mix(in srgb, var(--color-accent) 70%, black);
+	}
+</style>
