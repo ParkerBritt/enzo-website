@@ -461,6 +461,17 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		color: var(--color-text);
 	}
 
+	.docs-article :global(a) {
+		color: var(--color-accent);
+		text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+		text-underline-offset: 0.2em;
+		transition: text-decoration-color 0.15s ease;
+	}
+
+	.docs-article :global(a:hover) {
+		text-decoration-color: var(--color-accent);
+	}
+
 	.pager {
 		display: flex;
 		gap: var(--space-sm);
