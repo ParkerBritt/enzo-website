@@ -73,7 +73,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 				)
 			}
 
-			<main class="docs-content">
+			<main class="docs-content" transition:animate="none">
 				{
 					activeItem && (
 						<div class="breadcrumb">
@@ -136,7 +136,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		<script>
 			function updateActiveNavLinks() {
 				const pathname = location.pathname.replace(/\/$/, "") || "/";
-				document.querySelectorAll(".docs-sidebar a, .docs-tab").forEach((link) => {
+				document.querySelectorAll(".docs-sidebar a").forEach((link) => {
 					const href = link.getAttribute("href");
 					if (!href) return;
 					link.classList.toggle("active", href.replace(/\/$/, "") === pathname);
