@@ -379,10 +379,27 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		margin-block: var(--space-md) var(--space-sm);
 	}
 
+	.docs-article :global(h3) {
+		font-size: var(--text-base);
+		font-weight: 600;
+		margin-block: var(--space-sm) var(--space-xs);
+	}
+
 	.docs-article :global(p) {
 		margin-bottom: var(--space-sm);
 		color: var(--color-muted);
 		line-height: 1.7;
+	}
+
+	/* Inline code only. The child selector keeps it off code inside a pre block. */
+	.docs-article :global(:not(pre) > code) {
+		padding: 0.1em 0.35em;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 5px;
+		background: color-mix(in srgb, var(--color-text) 6%, transparent);
+		font-family: var(--font-mono);
+		font-size: 0.9em;
+		color: var(--color-text);
 	}
 
 	.docs-article :global(ul) {
@@ -458,7 +475,7 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	}
 
 	.docs-article :global(strong) {
-		color: var(--color-text);
+		color: var(--color-bold);
 	}
 
 	.docs-article :global(a) {

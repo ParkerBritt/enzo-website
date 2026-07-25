@@ -1,0 +1,139 @@
+---
+title: Your First Scene
+section: Getting Started
+order: 40
+description: Build a complete scene from scratch in six nodes.
+---
+
+import Callout from "../../../components/mdx/Callout.astro";
+import Figure from "../../../components/mdx/Figure.astro";
+import Kbd from "../../../components/mdx/Kbd.astro";
+
+This walks through building a whole scene from an empty graph. You'll make a grid, displace it into
+hills, scatter points across it, and copy a sphere onto each of those points.
+
+It's a pretty typical procedural setup, most of what you build will follow a similar shape.
+
+<Figure alt="The finished scene"/>
+
+## Before you start
+
+Enzo opens with four panels. The network editor on the left is where you build the graph, the viewport
+on the right shows the result. The parameters panel floats over the top right of the network editor and
+shows the parameters of whatever node you're working on. The spreadsheet along the bottom shows the raw
+numbers behind the geometry.
+
+You only need the network editor, the viewport and the spreadsheet here.
+[The Interface](/docs/guide/the-interface) covers all of them properly.
+
+<Figure alt="The four panels" caption="Network editor, viewport, floating parameters, spreadsheet." />
+
+## Add a Grid
+
+Hover over the network editor and press <Kbd>Tab</Kbd>. A search box opens at your cursor. Type `grid`
+to filter the list and press <Kbd>Enter</Kbd> to place it. <Kbd>↑</Kbd> and <Kbd>↓</Kbd> move the
+highlight if what you want isn't first, <Kbd>Esc</Kbd> closes without placing anything.
+
+<Figure alt="The node search menu" caption="Tab opens the search at your cursor." />
+
+The node is created where your cursor was and the parameters panel appears in the top right. Set `Rows`
+and `Columns` to 20, this gives you enough points to work with later. `Size` is the width and depth of
+the grid in world units, leave it at 10.
+
+<Figure alt="A grid node and its flat result" caption="A flat grid, 20 by 20." />
+
+## Push it into hills with Mountain
+
+Press <Kbd>Tab</Kbd> again, type `mountain`, press <Kbd>Enter</Kbd>.
+
+Now wire them together. Inputs are the dots along the top edge of a node and outputs are the dots along
+the bottom, so graphs read top to bottom. Drag from the dot at the bottom of `grid1` to the dot at the
+top of `mountain1`. A curve connects the two and geometry flows from the Grid into the Mountain.
+
+Mountain displaces the points it's given, so the flat grid becomes hills. Adjust its parameters until
+they read clearly in the viewport.
+
+<Figure alt="The grid displaced into hills" caption="Same grid, displaced." />
+
+<Callout type="tip">
+	To remove a link, hold <Kbd>Ctrl</Kbd> and click it. <Kbd>Ctrl</Kbd> and drag cuts every link you
+	drag across. <Kbd>Delete</Kbd> removes the selected nodes.
+</Callout>
+
+## Scatter points over the surface
+
+<Kbd>Tab</Kbd>, `scatter`, <Kbd>Enter</Kbd>. Wire `mountain1`'s output into `scatter1`'s input.
+
+Scatter distributes points across the surface it's given. The output is points on their own with no
+faces between them, so the viewport goes from solid hills to a cloud of dots sitting on them. The point
+count is the main parameter here.
+
+<Figure alt="Points scattered over the hills" caption="Points only, no surface." />
+
+## Make the thing you'll copy
+
+<Kbd>Tab</Kbd>, `sphere`, <Kbd>Enter</Kbd>. Leave this one unwired off to the side.
+
+This is the shape that gets copied onto every scattered point. Scale it down before going any further,
+a sphere at the default size will be far too big against the grid.
+
+<Figure alt="A small sphere node sitting on its own" caption="Not wired to anything yet." />
+
+## Copy the sphere onto every point
+
+<Kbd>Tab</Kbd>, `copy to points`, <Kbd>Enter</Kbd>.
+
+This node takes two inputs so it has two dots along its top edge, and the order matters. Input 0 is the
+left dot and takes the shape being copied, wire `sphere1` into that one. Input 1 is the right dot and
+takes the points to copy onto, wire `scatter1` into that one.
+
+Copy to Points has no parameters. It reads the position of every point on input 1 and puts a copy of
+input 0 at each one.
+
+<Callout type="warning">
+	If the inputs are backwards you'll get a single sphere, or copies of the whole terrain stacked on
+	top of each other. Swap the two links.
+</Callout>
+
+<Figure alt="Copy to Points wired to a sphere and a scatter" caption="Shape on the left input, points on the right." />
+
+## Look at it in the viewport
+
+The viewport draws one node at a time, whichever one has its display flag set. The display flag is the
+small bar inside the right edge of a node card, click it on `copytopoints1`.
+
+<Kbd>Left drag</Kbd> orbits, <Kbd>Middle drag</Kbd> pans, <Kbd>Right drag</Kbd> left and right dollies.
+The <Kbd>Scroll wheel</Kbd> dollies too.
+
+<Callout type="note">
+	There's no frame or home key yet, so if the geometry ends up off screen you'll have to dolly back
+	out manually.
+</Callout>
+
+<Figure alt="The finished scene in the viewport" caption="Display flag on, orbiting around the result." />
+
+## Check the numbers in the spreadsheet
+
+The spreadsheet follows whatever node you're working on. The sidebar on the left lists every primitive
+in the result and the table shows the attributes of the one you select. The chips in the top right
+switch between Points, Vertices, Faces and Primitive.
+
+Leave it on Points. The columns are `P.x`, `P.y` and `P.z`, the three components of `@P`, which is the
+position attribute every point carries. Click through the primitives in the sidebar and you'll see each
+copied sphere at its own position.
+
+<Callout type="note">
+	Points is the only mode properly filled in right now, the other three are wired up but mostly empty.
+</Callout>
+
+<Figure alt="The spreadsheet showing point positions" caption="P.x, P.y and P.z for every point." />
+
+## What to change next
+
+Go back to `scatter1` and change the point count. Everything downstream recooks and you get a new
+arrangement without touching the sphere or the terrain. Change `Rows` on the Grid and the hills
+resample under it.
+
+[Nodes & the Graph](/docs/guide/nodes-and-the-graph) covers what's happening when a change ripples
+downward, and [Attributes](/docs/guide/attributes) picks up where the spreadsheet left off. If you've
+used Houdini, [Coming from Houdini](/docs/guide/coming-from-houdini) is a faster way in.

@@ -1,15 +1,29 @@
 ---
+import { Icon } from "astro-icon/components";
+
 interface Props {
-	src: string;
+	src?: string;
 	alt: string;
 	caption?: string;
 }
 
+// Without a src the figure stands in as a placeholder, so a page can be written
+// before its screenshots exist.
 const { src, alt, caption } = Astro.props;
 ---
 
 <figure class="figure">
-	<img src={src} alt={alt} />
+	{
+		src ? (
+			<img src={src} alt={alt} />
+		) : (
+			<div class="placeholder">
+				<Icon name="lucide:image" size={30} aria-hidden="true" />
+				<span class="placeholder-label">Screenshot</span>
+				<span class="placeholder-alt">{alt}</span>
+			</div>
+		)
+	}
 	{caption && <figcaption>{caption}</figcaption>}
 </figure>
 
@@ -26,6 +40,41 @@ const { src, alt, caption } = Astro.props;
 		display: block;
 		width: 100%;
 		height: auto;
+	}
+
+	.placeholder {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		aspect-ratio: 16 / 9;
+		margin: 0.5rem;
+		border: 2px dashed #33333f;
+		border-radius: 6px;
+		background: var(--color-panel);
+		text-align: center;
+		padding: var(--space-sm);
+	}
+
+	.placeholder [data-icon] {
+		color: #4b4b57;
+		margin-bottom: 0.1rem;
+	}
+
+	.placeholder-label {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: #5c5c68;
+	}
+
+	.placeholder-alt {
+		font-family: var(--font-mono);
+		font-size: var(--text-sm);
+		color: var(--color-muted);
 	}
 
 	figcaption {
