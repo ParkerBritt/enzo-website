@@ -144,9 +144,9 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 				updateSidebarIndicator();
 			}
 
-			function updateSidebarIndicator() {
+			function updateSidebarIndicator(targetLink) {
 				const indicator = document.querySelector(".sidebar-indicator");
-				const activeLink = document.querySelector(".docs-sidebar a.active");
+				const activeLink = targetLink || document.querySelector(".docs-sidebar a.active");
 				if (!indicator) return;
 				if (!activeLink) {
 					indicator.classList.remove("visible");
@@ -162,6 +162,14 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 					indicator.style.transition = "";
 				}
 			}
+
+			// Moves the indicator to the clicked link right away, independent of when the new page finishes loading.
+			document.addEventListener("click", (event) => {
+				const link = event.target.closest(".docs-sidebar a");
+				if (!link) return;
+				document.querySelectorAll(".docs-sidebar a").forEach((a) => a.classList.toggle("active", a === link));
+				updateSidebarIndicator(link);
+			});
 
 			let cleanupTocScrollSpy = () => {};
 
