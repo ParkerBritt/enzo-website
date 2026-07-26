@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { DOCS_GUIDE_URL } from "../consts";
 ---
 
 <Layout title="404 | Enzo">
@@ -12,7 +13,7 @@ import Layout from "../layouts/Layout.astro";
 			</p>
 			<div class="actions">
 				<a href="/"><button class="primary">Back Home</button></a>
-				<a href="/docs/guide"><button>Read the Docs</button></a>
+				<a href={DOCS_GUIDE_URL}><button>Read the Docs</button></a>
 			</div>
 		</div>
 	</main>

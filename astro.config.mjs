@@ -11,11 +11,6 @@ export default defineConfig({
       prefetchAll: true,
     },
 
-  redirects: {
-      "/docs": "/docs/guide/install-build",
-      "/docs/guide": "/docs/guide/install-build",
-    },
-
   markdown: {
       shikiConfig: {
           theme: "github-dark-dimmed",

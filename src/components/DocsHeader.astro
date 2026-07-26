@@ -1,6 +1,7 @@
 ---
 import GithubIcon from "../assets/github.svg";
 import { Icon } from 'astro-icon/components';
+import { DOCS_GUIDE_URL } from "../consts";
 
 interface Props {
 	activeTab?: string;
@@ -11,7 +12,7 @@ const { activeTab } = Astro.props;
 const repoUrl = "https://github.com/parkerbritt/enzo";
 
 const tabs = [
-	{ label: "Guide", href: "/docs/guide", kind: "internal", icon: "lucide:book-open" },
+	{ label: "Guide", href: DOCS_GUIDE_URL, kind: "internal", icon: "lucide:book-open" },
 	{ label: "Nodes", href: "/docs/nodes", kind: "soon", icon: "lucide:workflow" },
 	{ label: "DasLang", href: "/docs/daslang", kind: "soon", icon: "lucide:square-function" },
 	{ label: "Python", kind: "soon", icon: "simple-icons:python" },

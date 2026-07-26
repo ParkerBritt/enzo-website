@@ -1,5 +1,6 @@
 ---
 import GithubIcon from "../assets/github.svg";
+import { DOCS_GUIDE_URL } from "../consts";
 
 const repoUrl = "https://github.com/parkerbritt/enzo";
 ---
@@ -13,9 +14,9 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
         <nav>
             <a href="https://github.com/parkerbritt/enzo/releases/latest">Download</a>
             <div class="docs-menu">
-                <a href="/docs/guide">Docs</a>
+                <a href={DOCS_GUIDE_URL}>Docs</a>
                 <div class="docs-dropdown">
-                    <a href="/docs/guide">User Guide</a>
+                    <a href={DOCS_GUIDE_URL}>User Guide</a>
                     <a href="/docs/nodes">Nodes</a>
                     <a href="/docs/daslang">Daslang</a>
                     <a href="https://parkerbritt.github.io/enzo/annotated.html" target="_blank" rel="noopener">C++</a>
