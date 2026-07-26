@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  website:
+    build: .
+    ports:
+      - "8014:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.enzo-website.rule=(Host(`enzo3d.com`) || Host(`www.enzo3d.com`))"
+      - "traefik.http.services.enzo-website.loadbalancer.server.port=80"
+      - "traefik.http.routers.enzo-website.tls.certresolver=lets-encrypt"
