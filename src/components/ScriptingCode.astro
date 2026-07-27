@@ -1,0 +1,125 @@
+---
+import { Code } from "astro:components";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	code?: string;
+}
+
+const { code = `float freq = prm("frequency")
+float amp = prm("amplitude")
+float wave = sin(@P.x * freq + TIME)
+
+@P.y += wave * amp
+@N = normalize(@N + vec(0, wave, 0))
+@Color = set(wave * 0.5 + 0.5, 0.4, 0.9)` } = Astro.props;
+---
+
+<div class="code-card">
+	<div class="code-header">
+		<div class="code-header-name">
+			<Icon name="lucide:function-square" size={13} aria-hidden="true" />
+			Script Node
+		</div>
+		<a class="lang-badge" href="https://daslang.io/" target="_blank" rel="noopener noreferrer">DasLang</a>
+	</div>
+	<div class="code-body">
+		<Code code={code} lang="glsl" theme="one-dark-pro" />
+	</div>
+</div>
+
+<style>
+	.code-card {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: #16161c;
+		overflow: hidden;
+	}
+
+	.code-header {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-sm);
+		padding: 10px 14px 10px 16px;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		background: color-mix(in srgb, var(--color-text) 4%, transparent);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--color-muted);
+	}
+
+	.code-header-name {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.code-header-name :global(svg) {
+		color: var(--color-accent);
+	}
+
+	.lang-badge {
+		font-weight: 600;
+		font-size: 11px;
+		color: var(--color-muted);
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 5px;
+		padding: 2px 8px;
+		text-decoration: none;
+		transition: color 0.15s ease, border-color 0.15s ease;
+	}
+
+	.lang-badge:hover {
+		color: var(--color-accent);
+		border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+	}
+
+	.code-body {
+		flex: 1;
+		padding: 20px 0;
+		font-size: 13px;
+		overflow: auto;
+	}
+
+	.code-body :global(pre) {
+		background: transparent !important;
+		margin: 0;
+		padding: 0;
+	}
+
+	.code-body :global(code) {
+		display: block;
+		counter-reset: line;
+		white-space: normal;
+	}
+
+	.code-body :global(.line) {
+		display: block;
+		padding: 0 20px 0 3.5rem;
+		position: relative;
+		line-height: 1.7;
+		min-height: 1.7em;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	.code-body :global(.line)::before {
+		counter-increment: line;
+		content: counter(line);
+		position: absolute;
+		left: 0;
+		width: 1.75rem;
+		text-align: right;
+		padding-right: 0.5rem;
+		border-right: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		color: color-mix(in srgb, var(--color-muted) 60%, transparent);
+	}
+</style>
