@@ -1,12 +1,13 @@
 ---
 import LaunchTimeStat from "./LaunchTimeStat.astro";
 import ScriptingCode from "./ScriptingCode.astro";
+import OpenSourceStat from "./OpenSourceStat.astro";
 
 const features = [
 	{
 		title: "Free & Open Source",
         description: "GPL-3.0. No license manager/keys, subscriptions, seat limits, or cost to worry about.",
-		placeholder: "GitHub stats",
+		media: OpenSourceStat,
 	},
 	{
 		title: "Unified Context",
@@ -33,7 +34,7 @@ const features = [
 
 <section id="features">
 	<div class="section-inner">
-		<!-- <h2 class="section-label">FEATURES</h2> -->
+		<h2 class="section-label">FEATURES</h2>
 		<div class="features">
 			{
 				features.map((feature) => {
@@ -56,6 +57,13 @@ const features = [
 </section>
 
 <style>
+    .section-label
+    {
+        padding-top: var(--space-md);
+        border-bottom: none;
+        text-align: center;
+    }
+
     h2 {
 		padding-bottom: var(--space-xs);
 		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
@@ -65,7 +73,7 @@ const features = [
 		display: flex;
 		flex-direction: column;
 		gap: 3rem;
-		margin-top: var(--space-md);
+		margin-top: var(--space-sm);
 	}
 
 	.feature-row {
