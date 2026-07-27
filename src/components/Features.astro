@@ -1,4 +1,7 @@
 ---
+import LaunchTimeStat from "./LaunchTimeStat.astro";
+import ScriptingCode from "./ScriptingCode.astro";
+
 const features = [
 	{
 		title: "Free & Open Source",
@@ -17,14 +20,16 @@ const features = [
 	},
 	{
 		title: "Scripting",
-        description: "Control parameters with code using DasLang's high performance, rich feature set, and python-like syntax.",
+        description: `Control parameters with code using <a href="https://daslang.io/" target="_blank" rel="noopener noreferrer">DasLang's</a> high performance, rich feature set, and python-like syntax.`,
 		placeholder: "Code snippet",
+		media: ScriptingCode,
 	},
 	{
 		title: "Lightweight",
         // TODO: verify claim, back it up
-        description: "Gui launches in under a second and running headless starts in nanoseconds.",
+        description: "Gui launches in under a second and running headless starts in milliseconds.",
 		placeholder: "0.8s stat",
+		media: LaunchTimeStat,
 	},
 ];
 ---
@@ -34,17 +39,20 @@ const features = [
 		<!-- <h2 class="section-label">FEATURES</h2> -->
 		<div class="features">
 			{
-				features.map((feature) => (
-					<div class="feature-row">
-						<div class="feature-copy">
-							<h3>{feature.title}</h3>
-							<p>{feature.description}</p>
+				features.map((feature) => {
+					const Media = feature.media;
+					return (
+						<div class="feature-row">
+							<div class="feature-copy">
+								<h3>{feature.title}</h3>
+								<p set:html={feature.description} />
+							</div>
+							<div class:list={["feature-media", { "feature-media--custom": Media }]}>
+								{Media ? <Media /> : <span>{feature.placeholder}</span>}
+							</div>
 						</div>
-						<div class="feature-media">
-							<span>{feature.placeholder}</span>
-						</div>
-					</div>
-				))
+					);
+				})
 			}
 		</div>
 	</div>
@@ -106,6 +114,12 @@ const features = [
 		margin-top: var(--space-sm);
 	}
 
+	.feature-copy p :global(a) {
+		color: var(--color-accent);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
 	.feature-media {
 		display: flex;
 		align-items: center;
@@ -118,6 +132,11 @@ const features = [
 		color: var(--color-muted);
 		font-family: var(--font-mono);
 		font-size: var(--text-sm);
+	}
+
+	.feature-media--custom {
+		border: none;
+		background: none;
 	}
 
 	@media (max-width: 48rem) {
