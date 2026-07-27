@@ -16,11 +16,11 @@ const { startPrice = 4999 } = Astro.props;
 	</div>
 
 	<span class="dollar-counter">${startPrice.toLocaleString()}</span>
-	<span class="counter-label">GPL-3.0 &middot; free forever</span>
+	<span class="counter-label">GPL-3.0</span>
 </div>
 
 <script>
-	const COUNTDOWN_DURATION_MS = 4000;
+	const COUNTDOWN_DURATION_MS = 1000;
 
 	function easeInOutSine(t: number) {
 		return -(Math.cos(Math.PI * t) - 1) / 2;
@@ -56,6 +56,7 @@ const { startPrice = 4999 } = Astro.props;
 			if (progress < 1) {
 				requestAnimationFrame(tick);
 			} else {
+				counter!.textContent = "Free Forever";
 				counter!.classList.remove("anticipating");
 				el.classList.add("unlocked");
 			}
@@ -178,12 +179,12 @@ const { startPrice = 4999 } = Astro.props;
 
 	.dollar-counter {
 		font-family: var(--font-mono);
-		font-size: 56px;
+		font-size: 40px;
 		font-weight: 700;
 		color: var(--color-text);
 		line-height: 1;
 		font-variant-numeric: tabular-nums;
-		transition: color 0.6s ease;
+		transition: color 0.6s ease, font-size 0.4s ease;
 	}
 
 	.dollar-counter.anticipating {
@@ -192,6 +193,7 @@ const { startPrice = 4999 } = Astro.props;
 
 	.oss-stat.unlocked .dollar-counter {
 		color: var(--color-accent);
+		font-size: 32px;
 		animation: counterSlam 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 	}
 
