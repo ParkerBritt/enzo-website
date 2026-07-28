@@ -16,7 +16,7 @@ const { startPrice = 4999 } = Astro.props;
 	</div>
 
 	<span class="dollar-counter">${startPrice.toLocaleString()}</span>
-	<span class="counter-label">GPL-3.0</span>
+	<span class="counter-label">Closed Source</span>
 </div>
 
 <script>
@@ -37,6 +37,7 @@ const { startPrice = 4999 } = Astro.props;
 
 		const start = Number(el.dataset.start) || 0;
 		const counter = el.querySelector<HTMLElement>(".dollar-counter");
+		const label = el.querySelector<HTMLElement>(".counter-label");
 		if (!counter) return;
 
 		// The displayed value is quantized to this step, so the countdown reads
@@ -68,6 +69,7 @@ const { startPrice = 4999 } = Astro.props;
 				counter!.style.transform = "";
 				counter!.textContent = "Free Forever";
 				counter!.classList.remove("anticipating");
+				if (label) label.textContent = "GPL-3.0";
 				el.classList.add("unlocked");
 			}
 		}
