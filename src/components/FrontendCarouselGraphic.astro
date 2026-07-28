@@ -1,0 +1,465 @@
+---
+import { readFileSync } from "node:fs";
+import { Icon } from "astro-icon/components";
+
+// Inline the mark so it can be recolored with currentColor like the lucide icons.
+const logoSvg = readFileSync(new URL("../../public/icons/enzo.svg", import.meta.url), "utf-8").replace(
+	/fill="#fefefe"/i,
+	'fill="currentColor"',
+);
+
+const windows = [
+	{ id: "game", title: "Game Engine" },
+	{ id: "headless", title: "Headless" },
+	{ id: "gui", title: "DCC" },
+];
+
+const dccTools = ["mouse-pointer-2", "move", "rotate-cw", "expand", "magnet"];
+const dccOutliner = [{ w: 55 }, { w: 40 }, { w: 62 }, { w: 46 }, { w: 34 }];
+const dccAttrs = [70, 45, 65, 40, 75];
+---
+
+<div class="carousel-graphic">
+	{
+		windows.map(({ id, title }, i) => (
+			<div class={`window window-${id}`} style={`animation-delay: ${-i * 3}s`}>
+				<div class="window-bar">
+					<span class="dot dot-red" />
+					<span class="dot dot-yellow" />
+					<span class="dot dot-green" />
+					<span class="window-title">{title}</span>
+				</div>
+				<div class="window-body">
+					{id === "headless" && (
+						<div class="terminal-body">
+							<div class="terminal-line">
+								<span class="terminal-prompt">$</span> enzo run --headless
+							</div>
+							<div class="terminal-line terminal-caret">
+								<span class="terminal-prompt">$</span>
+							</div>
+						</div>
+					)}
+					{id === "game" && (
+						<div class="engine-layout">
+							<div class="engine-viewport" />
+							<div class="engine-properties">
+								{[52, 78, 40, 65, 30, 70].map((w) => (
+									<div class="engine-row">
+										<span class="engine-label" />
+										<span class="engine-value" style={`width: ${w}%`} />
+									</div>
+								))}
+							</div>
+							<div class="engine-assets">
+								<div class="engine-tree">
+									<span class="engine-tree-row" style="width: 70%" />
+									<span class="engine-tree-row" style="width: 45%" />
+									<span class="engine-tree-row" style="width: 60%" />
+								</div>
+								<div class="engine-thumbs">
+									{Array.from({ length: 5 }).map((_, i) => (
+										<div class="engine-asset">
+											<span class="engine-thumb" style={`--i: ${i}`} />
+											<span class="engine-asset-label" />
+										</div>
+									))}
+								</div>
+							</div>
+						</div>
+					)}
+					{id === "gui" && (
+						<div class="dcc-layout">
+							<div class="dcc-tools">
+								{dccTools.map((icon) => (
+									<Icon name={`lucide:${icon}`} size={12} is:inline />
+								))}
+							</div>
+							<div class="dcc-outliner">
+								{dccOutliner.map((row) => (
+									<div class="dcc-outliner-row">
+										<span class="dcc-outliner-label" style={`width: ${row.w}%`} />
+									</div>
+								))}
+							</div>
+							<div class="dcc-viewport">
+								<svg class="dcc-gizmo" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round">
+									<line x1="4" y1="20" x2="13" y2="11" stroke="#3b82f6" />
+									<line x1="4" y1="20" x2="18" y2="20" stroke="#ef4444" />
+									<line x1="4" y1="20" x2="4" y2="6" stroke="#22c55e" />
+								</svg>
+							</div>
+							<div class="dcc-channelbox">
+								{dccAttrs.map((w) => (
+									<div class="dcc-attr-row">
+										<span class="dcc-attr-label" />
+										<span class="dcc-attr-value" style={`width: ${w}%`} />
+									</div>
+								))}
+								<div class="dcc-layer-tabs">
+									<span class="dcc-layer-tab" />
+									<span class="dcc-layer-tab" />
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
+		))
+	}
+
+	<div class="core">
+		<span class="core-logo" set:html={logoSvg} />
+	</div>
+</div>
+
+<style>
+	.carousel-graphic {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-panel);
+		box-shadow: 0 12px 24px color-mix(in srgb, black 20%, transparent);
+		overflow: hidden;
+	}
+
+	.core {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		aspect-ratio: 1 / 1;
+		height: 34%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+		border-radius: 10px;
+		background: color-mix(in srgb, var(--color-accent) 12%, var(--color-panel));
+		color: var(--color-accent);
+		z-index: 2;
+	}
+
+	.core-logo {
+		display: block;
+		width: 100%;
+		height: 100%;
+		padding: 27%;
+		box-sizing: border-box;
+	}
+
+	.core-logo :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.window {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 70%;
+		aspect-ratio: 16 / 10;
+		transform: translate(-50%, calc(-50% + 140%));
+		border: 1px solid color-mix(in srgb, var(--color-text) 16%, transparent);
+		border-radius: 8px;
+		background: var(--color-bg);
+		box-shadow: 0 8px 20px color-mix(in srgb, black 25%, transparent);
+		z-index: 1;
+		animation: windowCycle 9s ease-in-out infinite;
+	}
+
+	@keyframes windowCycle {
+		0% {
+			transform: translate(-50%, calc(-50% + 140%));
+		}
+		8% {
+			transform: translate(-50%, -50%);
+		}
+		25% {
+			transform: translate(-50%, -50%);
+		}
+		33%,
+		100% {
+			transform: translate(-50%, calc(-50% - 140%));
+		}
+	}
+
+	.window-bar {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 6px 8px;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+	}
+
+	.dot-red {
+		background: #ff5f56;
+	}
+
+	.dot-yellow {
+		background: #ffbd2e;
+	}
+
+	.dot-green {
+		background: #27c93f;
+	}
+
+	.window-title {
+		flex: 1;
+		margin-right: 32px;
+		text-align: center;
+		font-size: 11px;
+		font-weight: 600;
+		color: color-mix(in srgb, var(--color-text) 85%, transparent);
+	}
+
+	.window-body {
+		height: calc(100% - 21px);
+	}
+
+	.window-headless .window-body {
+		background: #1a1a1a;
+	}
+
+	.terminal-body {
+		height: 100%;
+		padding: 8px 10px;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		line-height: 1.6;
+		color: #d0d0d0;
+	}
+
+	.terminal-prompt {
+		color: #27c93f;
+	}
+
+	.terminal-caret::after {
+		content: "";
+		display: inline-block;
+		width: 6px;
+		height: 11px;
+		margin-left: 4px;
+		background: #d0d0d0;
+		vertical-align: middle;
+		animation: caretBlink 1s step-end infinite;
+	}
+
+	@keyframes caretBlink {
+		50% {
+			opacity: 0;
+		}
+	}
+
+	.engine-layout {
+		display: grid;
+		grid-template-columns: 1fr 28%;
+		grid-template-rows: 1fr auto;
+		height: 100%;
+		background: #1e1e1e;
+	}
+
+	.engine-viewport {
+		position: relative;
+		grid-column: 1;
+		grid-row: 1;
+		background: radial-gradient(120% 100% at 50% 30%, #262626, #1a1a1a);
+	}
+
+	.engine-properties {
+		grid-column: 2;
+		grid-row: 1 / 3;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		padding: 8px 6px;
+		border-left: 1px solid color-mix(in srgb, white 12%, transparent);
+		background: #232323;
+	}
+
+	.engine-row {
+		display: flex;
+		gap: 3px;
+	}
+
+	.engine-label {
+		width: 30%;
+		height: 5px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 16%, transparent);
+	}
+
+	.engine-value {
+		height: 5px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 26%, transparent);
+	}
+
+	.engine-assets {
+		grid-column: 1;
+		grid-row: 2;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 8px;
+		border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+		background: #232323;
+	}
+
+	.engine-tree {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 3px;
+		width: 15%;
+		flex-shrink: 0;
+		padding-right: 8px;
+		border-right: 1px solid color-mix(in srgb, white 12%, transparent);
+	}
+
+	.engine-tree-row {
+		height: 3px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 18%, transparent);
+	}
+
+	.engine-thumbs {
+		display: flex;
+		gap: 6px;
+	}
+
+	.engine-asset {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+		width: 16px;
+	}
+
+	.engine-thumb {
+		width: 16px;
+		height: 14px;
+		border-radius: 2px;
+		background: color-mix(in srgb, var(--color-accent) calc(20% + var(--i, 0) * 6%), #3a3a3a);
+	}
+
+	.engine-asset-label {
+		width: 80%;
+		height: 2px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 14%, transparent);
+	}
+
+	.dcc-layout {
+		display: grid;
+		grid-template-columns: 24px 22% 1fr 26%;
+		height: 100%;
+		background: #1e1e1e;
+		color: color-mix(in srgb, white 40%, transparent);
+	}
+
+	.dcc-tools {
+		/* Control: bump this to thicken the tool icon strokes. */
+		--dcc-icon-stroke: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		padding: 6px 0;
+		border-right: 1px solid color-mix(in srgb, white 12%, transparent);
+		background: #232323;
+	}
+
+	.dcc-tools :global(path) {
+		stroke-width: var(--dcc-icon-stroke);
+	}
+
+	.dcc-outliner {
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		padding: 6px 5px;
+		border-right: 1px solid color-mix(in srgb, white 12%, transparent);
+		background: #202020;
+		overflow: hidden;
+	}
+
+	.dcc-outliner-row {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.dcc-outliner-label {
+		height: 4px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 20%, transparent);
+	}
+
+	.dcc-viewport {
+		position: relative;
+		grid-column: 3;
+		background: radial-gradient(120% 100% at 50% 30%, #262626, #1a1a1a);
+	}
+
+	.dcc-gizmo {
+		position: absolute;
+		bottom: 8px;
+		left: 8px;
+		width: 20px;
+		height: 20px;
+	}
+
+	.dcc-channelbox {
+		grid-column: 4;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		padding: 6px;
+		border-left: 1px solid color-mix(in srgb, white 12%, transparent);
+		background: #232323;
+	}
+
+	.dcc-attr-row {
+		display: flex;
+		gap: 3px;
+	}
+
+	.dcc-attr-label {
+		width: 34%;
+		height: 4px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 16%, transparent);
+	}
+
+	.dcc-attr-value {
+		height: 4px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 26%, transparent);
+	}
+
+	.dcc-layer-tabs {
+		margin-top: auto;
+		display: flex;
+		gap: 3px;
+		padding-top: 5px;
+		border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+	}
+
+	.dcc-layer-tab {
+		flex: 1;
+		height: 6px;
+		border-radius: 1px;
+		background: color-mix(in srgb, white 14%, transparent);
+	}
+</style>
