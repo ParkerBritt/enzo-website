@@ -11,7 +11,6 @@ function fmt(ms: number) {
 	return (ms / 1000).toFixed(2) + " s";
 }
 
-const max = Math.max(houdiniMs, enzoMs);
 const speedup = enzoMs > 0 ? Math.round(houdiniMs / enzoMs) : 0;
 
 // Seconds of loop time per ms of real cook time. Ratio between rows stays exact (1719/45.4 ≈ 38x);
@@ -30,8 +29,10 @@ const rows = [
 		lang: "hython",
 		label: fmt(houdiniMs),
 		durationS: duration(houdiniMs),
-		fill: "#6f6f7d",
-		textColor: "var(--color-bold)",
+		fill: "#5c5c68",
+		textColor: "var(--color-muted)",
+		rowBg: "#181820",
+		rowBorder: "transparent",
 	},
 	{
 		name: "Enzo",
@@ -40,6 +41,8 @@ const rows = [
 		durationS: duration(enzoMs),
 		fill: "var(--color-accent)",
 		textColor: "var(--color-accent)",
+		rowBg: "color-mix(in oklch, var(--color-accent) 10%, #181820)",
+		rowBorder: "color-mix(in oklch, var(--color-accent) 30%, transparent)",
 	},
 ];
 ---
@@ -47,38 +50,49 @@ const rows = [
 <div class="launch-stat">
 	<div class="top">
 		<div class="header-copy">
-			<div class="eyebrow">Cook Performance</div>
+			<span class="eyebrow">Benchmark</span>
 			<h3 class="title">Time to first cook</h3>
-			<!-- <p class="subtitle">Lower is better</p> -->
 		</div>
-		<div class="speedup">
-			<span class="speedup-value">{speedup}×</span>
-			<span class="speedup-label">faster to cook</span>
-		</div>
+		<span class="lang-wrap" tabindex="0">
+			<svg width="16" height="16" viewBox="0 0 16 16" class="info-icon">
+				<circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.4"></circle>
+				<line x1="8" y1="5" x2="8" y2="8.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+				></line>
+				<circle cx="8" cy="11" r="0.8" fill="currentColor"></circle>
+			</svg>
+			<span class="tooltip">{methodNote}</span>
+		</span>
 	</div>
+
+	<div class="divider"></div>
+
+	<div class="speedup">
+		<span class="speedup-value">{speedup}×</span>
+		<span class="speedup-label">faster to first cook</span>
+	</div>
+
+	<div class="divider"></div>
 
 	<div class="rows">
 		{
 			rows.map((row) => (
 				<div class="row">
-					<div class="row-head">
-						<div class="row-name">
-							<span class="name">{row.name}</span>
-							<span class="lang-wrap" tabindex="0">
-								<span class="lang">{row.lang}</span>
-								<span class="tooltip">{methodNote}</span>
-							</span>
-						</div>
-						<span class="label" style={`color: ${row.textColor}`}>
-							{row.label}
-						</span>
+					<div class="row-name">
+						<span class="name">{row.name}</span>
+						<!-- <span class="lang">{row.lang}</span> -->
 					</div>
-					<div class="bar-track">
+					<div
+						class="bar-track"
+						style={`background: ${row.rowBg}; border-color: ${row.rowBorder}`}
+					>
 						<div
 							class="bar-fill"
 							style={`animation-duration: ${row.durationS}s; background: ${row.fill}`}
 						/>
 					</div>
+					<span class="label" style={`color: ${row.textColor}`}>
+						{row.label}
+					</span>
 				</div>
 			))
 		}
@@ -100,8 +114,8 @@ const rows = [
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-		padding: 24px;
+		justify-content: center;
+		padding: 18px 22px;
 		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
 		border-radius: 12px;
 		background: var(--color-panel);
@@ -117,115 +131,49 @@ const rows = [
 	.header-copy {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 4px;
 		min-width: 0;
 	}
 
 	.eyebrow {
 		font-family: var(--font-mono);
-		font-weight: 700;
-		font-size: 10px;
-		letter-spacing: 0.16em;
+		font-weight: 600;
+		font-size: 11px;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		color: var(--color-accent);
+		color: var(--color-muted);
 	}
 
 	.title {
-		font-size: 20px;
+		font-size: 19px;
 		font-weight: 700;
 		letter-spacing: -0.01em;
-		line-height: 1.15;
+		line-height: 1.2;
 		color: var(--color-text);
 	}
 
-	.subtitle {
-		font-size: 12px;
-		color: var(--color-muted);
-		max-width: 15rem;
-	}
-
-	.speedup {
-		text-align: right;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 30%, transparent);
-	}
-
-	.speedup-value {
-		font-family: var(--font-mono);
-		font-size: 35px;
-		font-weight: 700;
-		color: var(--color-accent);
-		line-height: 1;
-		-webkit-text-stroke: 0.5px var(--color-accent);
-	}
-
-	.speedup-label {
-		font-family: var(--font-mono);
-		font-weight: 600;
-		font-size: 10px;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--color-muted);
-		margin-top: 6px;
-	}
-
-	.rows {
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-	}
-
-	.row {
-		display: flex;
-		flex-direction: column;
-		gap: 5px;
-	}
-
-	.row-head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--space-sm);
-	}
-
-	.row-name {
-		display: flex;
-		align-items: center;
-		gap: var(--space-xs);
-	}
-
-	.name {
-		font-size: 16px;
-		font-weight: 600;
-		color: var(--color-text);
+	.divider {
+		height: 1px;
+		background: color-mix(in srgb, var(--color-text) 9%, transparent);
+		margin: 12px 0;
 	}
 
 	.lang-wrap {
 		position: relative;
 		display: inline-flex;
 		outline: none;
+		flex-shrink: 0;
 	}
 
-	.lang {
-		font-family: var(--font-mono);
-		font-weight: 600;
-		font-size: 11px;
+	.info-icon {
 		color: var(--color-muted);
-		border: 1px solid #34343f;
-		border-radius: 5px;
-		padding: 2px 8px;
-		white-space: nowrap;
 	}
 
 	.tooltip {
 		position: absolute;
-		bottom: calc(100% + 8px);
-		left: 50%;
-		transform: translateX(-50%);
-		width: 220px;
+		top: calc(100% + 8px);
+		right: 0;
+		width: 230px;
 		background: var(--color-bg);
 		color: var(--color-text);
 		font-family: var(--font-mono);
@@ -251,15 +199,79 @@ const rows = [
 		visibility: visible;
 	}
 
+	.speedup {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.speedup-value {
+		font-family: var(--font-mono);
+		font-size: 48px;
+		font-weight: 700;
+		color: var(--color-accent);
+		line-height: 1;
+		letter-spacing: -0.02em;
+	}
+
+	.speedup-label {
+		font-weight: 600;
+		font-size: 12px;
+		letter-spacing: 0.02em;
+		color: var(--color-muted);
+	}
+
+	.rows {
+		display: flex;
+		flex-direction: column;
+		gap: 0px;
+	}
+
+	.row {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		padding: 10px 14px;
+		border-radius: 10px;
+		border: 1px solid transparent;
+	}
+
+	.row-name {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		width: 72px;
+		flex-shrink: 0;
+	}
+
+	.name {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--color-text);
+	}
+
+	.lang {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		font-size: 10px;
+		color: var(--color-muted);
+	}
+
 	.label {
 		font-family: var(--font-mono);
-		font-size: 18px;
+		font-size: 15px;
 		font-weight: 700;
+		flex-shrink: 0;
+		text-align: right;
+		min-width: 64px;
 	}
 
 	.bar-track {
+		flex: 1;
+		min-width: 0;
 		height: 22px;
-		background: #26262f;
+		border: 1px solid transparent;
 		border-radius: 8px;
 		overflow: hidden;
 	}
