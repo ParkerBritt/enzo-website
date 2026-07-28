@@ -14,6 +14,13 @@ function fmt(ms: number) {
 const max = Math.max(houdiniMs, enzoMs);
 const speedup = enzoMs > 0 ? Math.round(houdiniMs / enzoMs) : 0;
 
+// Seconds of loop time per ms of real cook time. Ratio between rows stays exact (1719/45.4 ≈ 38x);
+// raise this to slow the whole animation down, lower it to speed it up.
+const speedScale = 0.08;
+function duration(ms: number) {
+	return ms * speedScale;
+}
+
 const methodNote =
 	"This compares a Enzo vs Houdini cooking a node headlessly. Each figure is the fastest available method in that tool, Houdini cannot run headless in C++, while Enzo can. Averaged over 50 runs.";
 
@@ -22,7 +29,7 @@ const rows = [
 		name: "Houdini",
 		lang: "hython",
 		label: fmt(houdiniMs),
-		pct: Math.max(3, (houdiniMs / max) * 100),
+		durationS: duration(houdiniMs),
 		fill: "#6f6f7d",
 		textColor: "var(--color-bold)",
 	},
@@ -30,7 +37,7 @@ const rows = [
 		name: "Enzo",
 		lang: "C++",
 		label: fmt(enzoMs),
-		pct: Math.max(3, (enzoMs / max) * 100),
+		durationS: duration(enzoMs),
 		fill: "var(--color-accent)",
 		textColor: "var(--color-accent)",
 	},
@@ -40,9 +47,9 @@ const rows = [
 <div class="launch-stat">
 	<div class="top">
 		<div class="header-copy">
-			<!-- <div class="eyebrow">Cook Performance</div> -->
+			<div class="eyebrow">Cook Performance</div>
 			<h3 class="title">Time to first cook</h3>
-			<p class="subtitle">Lower is better</p>
+			<!-- <p class="subtitle">Lower is better</p> -->
 		</div>
 		<div class="speedup">
 			<span class="speedup-value">{speedup}×</span>
@@ -67,7 +74,10 @@ const rows = [
 						</span>
 					</div>
 					<div class="bar-track">
-						<div class="bar-fill" style={`width: ${row.pct}%; background: ${row.fill}`} />
+						<div
+							class="bar-fill"
+							style={`animation-duration: ${row.durationS}s; background: ${row.fill}`}
+						/>
 					</div>
 				</div>
 			))
@@ -76,12 +86,12 @@ const rows = [
 </div>
 
 <style>
-	@keyframes barGrow {
+	@keyframes fillLoop {
 		from {
-			transform: scaleX(0);
+			width: 0%;
 		}
 		to {
-			transform: scaleX(1);
+			width: 100%;
 		}
 	}
 
@@ -140,14 +150,16 @@ const rows = [
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
+		text-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 30%, transparent);
 	}
 
 	.speedup-value {
 		font-family: var(--font-mono);
-		font-size: 30px;
+		font-size: 35px;
 		font-weight: 700;
 		color: var(--color-accent);
 		line-height: 1;
+		-webkit-text-stroke: 0.5px var(--color-accent);
 	}
 
 	.speedup-label {
@@ -248,14 +260,16 @@ const rows = [
 	.bar-track {
 		height: 22px;
 		background: #26262f;
-		border-radius: 6px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
 	.bar-fill {
+		width: 100%;
 		height: 100%;
-		border-radius: 6px;
-		transform-origin: left;
-		animation: barGrow 3s cubic-bezier(0.22, 1, 0.36, 1) both;
+		border-radius: 8px;
+		animation-name: fillLoop;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
 	}
 </style>
