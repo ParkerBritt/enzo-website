@@ -110,6 +110,7 @@ h2 {
 /* Every other section gets a lighter background so you can tell them apart. */
 section {
   padding-block: var(--space-lg);
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 6%, transparent);
 }
 
 section:nth-of-type(odd) {
