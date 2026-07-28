@@ -1,0 +1,60 @@
+---
+// A span of text with an icon tucked behind it that peeks out on hover. Drop
+// it inside any heading, alongside other text if only one word should peek.
+// A backdrop behind the text (and in front of the icon) covers whatever part of
+// the icon isn't supposed to show. It's positioned from the same --peek-x the
+// icon uses, so the two never need to be hand-aligned separately.
+interface Props {
+	text: string;
+	icon: string;
+	offsetX: string;
+	rotate?: number;
+	maskColor?: string;
+}
+
+const { text, icon, offsetX, rotate = -10, maskColor = "var(--color-panel)" } = Astro.props;
+---
+
+<span class="icon-peek" style={`--peek-x: ${offsetX}; --peek-rotate: ${rotate}deg; --peek-mask: ${maskColor}`}>
+	<img class="peek-icon" src={icon} alt="" width="24" height="24" />
+	<span class="mask"></span>
+	<span class="label-text">{text}</span>
+</span>
+
+<style>
+	.icon-peek {
+		position: relative;
+		display: inline-block;
+	}
+
+	.peek-icon {
+		position: absolute;
+		top: 50%;
+		left: var(--peek-x);
+		z-index: 0;
+		scale: 2;
+		transform: translateY(0%) rotate(0deg);
+		transition: transform 0.25s ease;
+	}
+
+	.icon-peek:hover .peek-icon {
+		transform: translateY(-50%) rotate(var(--peek-rotate));
+	}
+
+	.mask {
+		position: absolute;
+		z-index: 1;
+		top: 0.35em;
+		bottom: -0.2em;
+		/* The icon is a 24px box scaled 2x around its center, so its visual edges
+		   land 12px outside --peek-x on either side. Padded a bit further for safety. */
+		left: calc(var(--peek-x) - 16px);
+		width: 56px;
+		background: var(--peek-mask);
+	}
+
+	.label-text {
+		position: relative;
+		z-index: 2;
+	}
+</style>
