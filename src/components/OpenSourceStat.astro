@@ -140,7 +140,7 @@ const { startPrice = 4999 } = Astro.props;
 	.oss-stat.unlocked {
 		background: radial-gradient(
 				circle at 50% 35%,
-				color-mix(in srgb, var(--color-accent) 12%, transparent),
+				color-mix(in srgb, var(--color-accent) 6%, transparent),
 				transparent 65%
 			),
 			var(--color-panel);
@@ -227,7 +227,7 @@ const { startPrice = 4999 } = Astro.props;
 	.oss-stat.unlocked .lock-wrap :global(.lock-open) {
 		opacity: 1;
 		transform: scale(1);
-		filter: drop-shadow(0 3px 10px color-mix(in srgb, black 90%, transparent));
+		filter: drop-shadow(0 2px 4px color-mix(in srgb, black 50%, transparent));
 	}
 
 	.dollar-counter {
@@ -247,7 +247,7 @@ const { startPrice = 4999 } = Astro.props;
 	.oss-stat.unlocked .dollar-counter {
 		color: var(--color-accent);
 		font-size: var(--oss-font-size-unlocked);
-		text-shadow: 0 3px 7px color-mix(in srgb, black 45%, transparent);
+		text-shadow: 0 2px 4px color-mix(in srgb, black 30%, transparent);
 		animation: counterSlam var(--oss-slam-duration) cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 	}
 
