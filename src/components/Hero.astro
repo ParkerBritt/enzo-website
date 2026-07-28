@@ -17,9 +17,9 @@
                 <a href="https://github.com/parkerbritt/enzo/releases/latest"><button>Download</button></a>
 			</div>
 		</div>
-		<!-- <div class="hero-media"> -->
-		<!-- 	<video src="/videos/demo.mp4" autoplay loop muted playsinline></video> -->
-		<!-- </div> -->
+		<div class="hero-media">
+			<video src="/videos/demo.mp4" autoplay loop muted playsinline></video>
+		</div>
 	</div>
 </div>
 
@@ -71,7 +71,14 @@
 		color: var(--color-muted);
 		font-family: var(--font-mono);
 		font-size: var(--text-sm);
-		box-shadow: 0 12px 24px color-mix(in srgb, black 20%, transparent);
+		box-shadow: 0 24px 48px color-mix(in srgb, black 35%, transparent);
+
+		width: 145%;
+		max-width: none;
+		margin-right: -45%;
+		perspective: 1600px;
+		transform: perspective(1600px) rotateY(-18deg) rotateX(6deg);
+		transform-style: preserve-3d;
 	}
 
 	.hero-media video {
@@ -112,7 +119,7 @@
 
 	button:hover {
 		border-color: color-mix(in srgb, var(--color-text) 25%, transparent);;
-		background: color-mix(in srgb, var(--color-text) 8%, transparent);
+		background: color-mix(in srgb, var(--color-panel), var(--color-text) 8%);
 	}
 
 	button.primary {
@@ -130,6 +137,12 @@
 	@media (max-width: 48rem) {
 		.hero-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.hero-media {
+			width: 100%;
+			margin-right: 0;
+			transform: none;
 		}
 	}
 </style>
