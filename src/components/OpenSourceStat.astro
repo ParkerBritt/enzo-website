@@ -25,7 +25,7 @@ const { startPrice = 4999 } = Astro.props;
 	const COUNTDOWN_GROW_SCALE = 0.25;
 	// How far up from the bottom of the viewport the card must be scrolled
 	// before it counts as visible and the countdown fires.
-	const TRIGGER_ROOT_MARGIN = "0px 0px -55% 0px";
+	const TRIGGER_ROOT_MARGIN = "0px 0px -50% 0px";
 
 	function easeInOutSine(t: number) {
 		return -(Math.cos(Math.PI * t) - 1) / 2;
@@ -111,10 +111,38 @@ const { startPrice = 4999 } = Astro.props;
 		justify-content: center;
 		gap: var(--oss-gap);
 		padding: var(--oss-padding);
+		position: relative;
+		overflow: hidden;
 		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
 		border-radius: var(--oss-radius);
-		background: var(--color-panel);
+		background: radial-gradient(
+				circle at 50% 35%,
+				color-mix(in srgb, var(--color-accent) 6%, transparent),
+				transparent 65%
+			),
+			var(--color-panel);
 		box-shadow: 0 12px 24px color-mix(in srgb, black 20%, transparent);
+	}
+
+	.oss-stat::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(color-mix(in srgb, var(--color-text) 3%, transparent) 1px, transparent 1px),
+			linear-gradient(90deg, color-mix(in srgb, var(--color-text) 3%, transparent) 1px, transparent 1px);
+		background-size: 32px 32px;
+		mask-image: radial-gradient(circle at 50% 35%, black, transparent 60%);
+		pointer-events: none;
+	}
+
+	.oss-stat.unlocked {
+		background: radial-gradient(
+				circle at 50% 35%,
+				color-mix(in srgb, var(--color-accent) 12%, transparent),
+				transparent 65%
+			),
+			var(--color-panel);
+		transition: background var(--oss-color-fade-duration) ease;
 	}
 
 	@keyframes ringPulse {
@@ -197,6 +225,7 @@ const { startPrice = 4999 } = Astro.props;
 	.oss-stat.unlocked .lock-wrap :global(.lock-open) {
 		opacity: 1;
 		transform: scale(1);
+		filter: drop-shadow(0 3px 10px color-mix(in srgb, black 90%, transparent));
 	}
 
 	.dollar-counter {
@@ -216,6 +245,7 @@ const { startPrice = 4999 } = Astro.props;
 	.oss-stat.unlocked .dollar-counter {
 		color: var(--color-accent);
 		font-size: var(--oss-font-size-unlocked);
+		text-shadow: 0 3px 7px color-mix(in srgb, black 45%, transparent);
 		animation: counterSlam var(--oss-slam-duration) cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 	}
 
