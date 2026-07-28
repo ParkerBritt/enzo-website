@@ -69,6 +69,9 @@
   --space-sm: 1rem;
   --space-md: 2rem;
   --space-lg: 4rem;
+  --space-xl: 8rem;
+  --space-2xl: 16rem;
+  --space-3xl: 32rem;
 }
 
 * {
