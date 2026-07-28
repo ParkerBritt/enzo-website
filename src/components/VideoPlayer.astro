@@ -1,0 +1,113 @@
+---
+interface Props {
+	src: string;
+	aspectRatio?: string;
+}
+
+const { src, aspectRatio = "21 / 9" } = Astro.props;
+---
+
+<div class="video-player" style={`aspect-ratio: ${aspectRatio};`}>
+	<video class="player-video" src={src} loop playsinline preload="auto"></video>
+	<div class="vignette"></div>
+	<button class="play-button" type="button" aria-label="Play video">
+		<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" />
+		</svg>
+	</button>
+</div>
+
+<script>
+	function initVideoPlayer(player: HTMLElement) {
+		const video = player.querySelector<HTMLVideoElement>(".player-video");
+		const playButton = player.querySelector<HTMLButtonElement>(".play-button");
+		if (!video || !playButton) return;
+
+		playButton.addEventListener("click", () => {
+			video.controls = true;
+			video.play();
+			player.classList.add("is-playing");
+		});
+	}
+
+	document.querySelectorAll<HTMLElement>(".video-player").forEach(initVideoPlayer);
+</script>
+
+<style>
+	.video-player {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		border-radius: 8px;
+	}
+
+	.video-player video {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		filter: blur(6px);
+		transform: scale(1.05);
+		transition: filter 0.4s ease, transform 0.4s ease;
+	}
+
+	.video-player.is-playing video {
+		filter: none;
+		transform: none;
+	}
+
+	.vignette {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: radial-gradient(
+			ellipse at center,
+			transparent 40%,
+			color-mix(in srgb, black 55%, transparent) 100%
+		);
+		transition: opacity 0.4s ease;
+	}
+
+	.video-player.is-playing .vignette {
+		opacity: 0;
+	}
+
+	.play-button {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: none;
+		background: none;
+		cursor: pointer;
+	}
+
+	.play-button svg {
+		width: var(--space-lg);
+		height: var(--space-lg);
+		padding: var(--space-sm);
+		border-radius: 50%;
+		background: var(--color-accent);
+		color: var(--color-bg);
+		box-shadow: 0 12px 24px color-mix(in srgb, black 35%, transparent);
+		transition: background 0.2s ease, transform 0.3s ease, opacity 0.3s ease;
+	}
+
+	.play-button:hover svg {
+		background: color-mix(in srgb, var(--color-accent) 95%, white);
+		transform: scale(1.1);
+	}
+
+	.video-player.is-playing .play-button {
+		pointer-events: none;
+	}
+
+	.video-player.is-playing .play-button svg {
+		transform: scale(0);
+		opacity: 0;
+	}
+</style>
