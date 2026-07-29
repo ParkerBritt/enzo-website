@@ -1,0 +1,317 @@
+<div class="terrain-graphic">
+	<canvas class="terrain-canvas"></canvas>
+	<div class="terrain-controls">
+		<label class="terrain-label" for="terrain-phase">Sine Phase</label>
+		<input type="range" id="terrain-phase" class="terrain-slider" min="0" max="100" value="0" step="1" />
+	</div>
+</div>
+
+<style>
+	.terrain-graphic {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 12px;
+		background: var(--color-panel);
+		box-shadow: 0 12px 24px color-mix(in srgb, black 20%, transparent);
+		overflow: hidden;
+	}
+
+	.terrain-canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.terrain-controls {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 10px 14px 12px;
+		background: linear-gradient(to top, color-mix(in srgb, var(--color-panel) 85%, black), transparent);
+	}
+
+	.terrain-label {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-muted);
+	}
+
+	.terrain-slider {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 100%;
+		height: 4px;
+		border-radius: 2px;
+		background: color-mix(in srgb, var(--color-text) 18%, transparent);
+		cursor: pointer;
+	}
+
+	.terrain-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		border: 2px solid var(--color-panel);
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+
+	.terrain-slider::-moz-range-thumb {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--color-accent);
+		border: 2px solid var(--color-panel);
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+</style>
+
+<script>
+	import * as THREE from "three";
+
+	// Grid resolution: a GRID x GRID field of quads, so (GRID+1)^2 vertices.
+	const GRID = 8;
+	const PLANE_SIZE = 10;
+	const TERRAIN_HEIGHT = 3;
+
+	const ORBIT_RADIUS = 7;
+
+	const UP = new THREE.Vector3(0, 1, 0);
+
+	// Where the sun sits around the terrain, off the front-left so the lit and shaded
+	// faces both stay visible from the camera's diagonal.
+	const LIGHT_ANGLE = Math.PI * 0.75;
+
+	// How far the light and camera drift up and down as the terrain noise carries them,
+	// as a multiple of the terrain's own height range.
+	const LIGHT_HEIGHT = 4;
+	const LIGHT_HEIGHT_SWING = 1.6;
+	const CAMERA_HEIGHT_SWING = 1.2;
+
+	// Deterministic value noise, smooth enough for terrain without pulling in a noise library.
+	function hash(x: number, y: number) {
+		const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+		return s - Math.floor(s);
+	}
+
+	function smoothstep(t: number) {
+		return t * t * (3 - 2 * t);
+	}
+
+	// A camera/light gizmo: a rectangle (the image/light plane) with four lines
+	// converging on a point in front of it, reading as a rectangle-plus-triangle
+	// wireframe from the side, like the frustum icons DCC tools use for cameras.
+	function createGizmo(color: THREE.Color, width: number, height: number, depth: number) {
+		const hw = width / 2;
+		const hh = height / 2;
+		const corners = [
+			new THREE.Vector3(-hw, hh, -depth),
+			new THREE.Vector3(hw, hh, -depth),
+			new THREE.Vector3(hw, -hh, -depth),
+			new THREE.Vector3(-hw, -hh, -depth),
+		];
+
+		const material = new THREE.LineBasicMaterial({ color, transparent: true });
+
+		const rect = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(corners), material);
+
+		const legPoints: THREE.Vector3[] = [];
+		for (const corner of corners) legPoints.push(new THREE.Vector3(0, 0, 0), corner);
+		const legs = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(legPoints), material);
+
+		const group = new THREE.Group();
+		group.add(rect, legs);
+		return { group, material };
+	}
+
+	// A light gizmo: a square plate with an arrow shooting out its front,
+	// pointing the direction the light travels.
+	function createLightGizmo(color: THREE.Color, size: number, arrowLength: number) {
+		const hw = size / 2;
+		const corners = [
+			new THREE.Vector3(-hw, hw, 0),
+			new THREE.Vector3(hw, hw, 0),
+			new THREE.Vector3(hw, -hw, 0),
+			new THREE.Vector3(-hw, -hw, 0),
+		];
+		const material = new THREE.LineBasicMaterial({ color, transparent: true });
+		const square = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(corners), material);
+
+		const fill = new THREE.Mesh(
+			new THREE.PlaneGeometry(size, size),
+			new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.35, side: THREE.DoubleSide }),
+		);
+
+		const arrow = new THREE.ArrowHelper(
+			new THREE.Vector3(0, 0, 1),
+			new THREE.Vector3(0, 0, 0),
+			arrowLength,
+			color,
+			arrowLength * 0.35,
+			arrowLength * 0.25,
+		);
+
+		const group = new THREE.Group();
+		group.add(square, fill, arrow);
+		return { group, material };
+	}
+
+	function valueNoise(x: number, y: number) {
+		const x0 = Math.floor(x);
+		const y0 = Math.floor(y);
+		const fx = smoothstep(x - x0);
+		const fy = smoothstep(y - y0);
+		const a = hash(x0, y0);
+		const b = hash(x0 + 1, y0);
+		const c = hash(x0, y0 + 1);
+		const d = hash(x0 + 1, y0 + 1);
+		return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
+	}
+
+	function terrainHeight(x: number, z: number, phase: number) {
+		// Layer two octaves so the terrain has both broad hills and small bumps.
+		// The phase offset comes from the same slider that drives the light and
+		// camera, so dragging it visibly reshapes the terrain too.
+		const n =
+			valueNoise(x * 0.6 + phase, z * 0.6) * 0.7 + valueNoise(x * 1.6 + 9, z * 1.6 + 9 + phase) * 0.3;
+		return n * TERRAIN_HEIGHT;
+	}
+
+	function setup(canvas: HTMLCanvasElement, slider: HTMLInputElement) {
+		const scene = new THREE.Scene();
+
+		const geometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, GRID, GRID);
+		geometry.rotateX(-Math.PI / 2);
+
+		const position = geometry.attributes.position;
+
+		const colorLow = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue("--color-panel"));
+		const colorHigh = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue("--color-accent"));
+		const colors = new Float32Array(position.count * 3);
+		geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+		function applyTerrain(phase: number) {
+			for (let i = 0; i < position.count; i++) {
+				const h = terrainHeight(position.getX(i), position.getZ(i), phase);
+				position.setY(i, h);
+
+				const mixed = colorLow.clone().lerp(colorHigh, THREE.MathUtils.clamp(h / TERRAIN_HEIGHT, 0, 1));
+				colors[i * 3] = mixed.r;
+				colors[i * 3 + 1] = mixed.g;
+				colors[i * 3 + 2] = mixed.b;
+			}
+			position.needsUpdate = true;
+			geometry.attributes.color.needsUpdate = true;
+			geometry.computeVertexNormals();
+		}
+		applyTerrain(0);
+
+		const material = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+		const mesh = new THREE.Mesh(geometry, material);
+
+		// Flat reference grid, kept separate from `geometry` so terrain height never bumps it.
+		const flatGeometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, GRID, GRID);
+		flatGeometry.rotateX(-Math.PI / 2);
+		const wireframe = new THREE.LineSegments(
+			new THREE.WireframeGeometry(flatGeometry),
+			new THREE.LineBasicMaterial({ color: colorHigh, transparent: true, opacity: 0.15 }),
+		);
+
+		const terrainGroup = new THREE.Group();
+		terrainGroup.add(mesh, wireframe);
+		scene.add(terrainGroup);
+
+		scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+		const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+		scene.add(sun);
+
+		const lightGizmo = createLightGizmo(new THREE.Color(0xffffff), 0.9, 1.1);
+		scene.add(lightGizmo.group);
+
+		const cameraGizmo = createGizmo(colorHigh, 1.1, 0.75, -1.4);
+		scene.add(cameraGizmo.group);
+
+		// The render camera stays fixed; only the camera gizmo moves to represent
+		// what "the camera" is doing, since this graphic is a stage the viewer
+		// watches from outside, not a first-person view through that camera.
+		const baseFrustum = PLANE_SIZE * 0.75;
+		const camera = new THREE.OrthographicCamera(-baseFrustum, baseFrustum, baseFrustum, -baseFrustum, 0.1, 100);
+		const cameraDistance = 8;
+		// Looking down a diagonal so a corner of the terrain points at the viewer.
+		camera.position.set(cameraDistance, cameraDistance, cameraDistance);
+		camera.lookAt(0, 0, 0);
+
+		const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+		function updateProjection() {
+			const { clientWidth, clientHeight } = canvas;
+			if (clientWidth === 0 || clientHeight === 0) return;
+			renderer.setSize(clientWidth, clientHeight, false);
+			const aspect = clientWidth / clientHeight;
+			camera.left = -baseFrustum * aspect;
+			camera.right = baseFrustum * aspect;
+			camera.top = baseFrustum;
+			camera.bottom = -baseFrustum;
+			camera.updateProjectionMatrix();
+		}
+
+		function render() {
+			updateProjection();
+
+			const t = Number(slider.value) / 100;
+
+			// Geometry: the same t reshapes the terrain by shifting the noise it samples.
+			const phase = t * 4;
+			applyTerrain(phase);
+
+			// Light: the sun holds a fixed heading and only its height wanders. It reads
+			// the terrain function at its own spot, so it rises and falls with the ground.
+			const sunX = Math.cos(LIGHT_ANGLE) * ORBIT_RADIUS;
+			const sunZ = Math.sin(LIGHT_ANGLE) * ORBIT_RADIUS;
+			const sunPosition = new THREE.Vector3(
+				sunX,
+				LIGHT_HEIGHT + terrainHeight(sunX, sunZ, phase) * LIGHT_HEIGHT_SWING,
+				sunZ,
+			);
+			sun.position.copy(sunPosition);
+			lightGizmo.group.position.copy(sunPosition);
+			lightGizmo.group.lookAt(0, 0, 0);
+
+			// Camera: the gizmo holds its spot, swung a quarter turn off the render
+			// camera's diagonal so it is seen from the side rather than head-on. Only
+			// its height moves, on the same noise as the terrain and the light.
+			const gizmoPosition = new THREE.Vector3(cameraDistance * 0.95, 0, cameraDistance * 0.95).applyAxisAngle(
+				UP,
+				Math.PI / 4,
+			);
+			gizmoPosition.y =
+				cameraDistance * 0.8 + terrainHeight(gizmoPosition.x, gizmoPosition.z, phase) * CAMERA_HEIGHT_SWING;
+			cameraGizmo.group.position.copy(gizmoPosition);
+			cameraGizmo.group.lookAt(0, 0, 0);
+
+			renderer.render(scene, camera);
+		}
+
+		const resizeObserver = new ResizeObserver(render);
+		resizeObserver.observe(canvas);
+
+		slider.addEventListener("input", render);
+		render();
+	}
+
+	document.querySelectorAll<HTMLCanvasElement>(".terrain-canvas").forEach((canvas) => {
+		const slider = canvas.parentElement?.querySelector<HTMLInputElement>(".terrain-slider");
+		if (slider) setup(canvas, slider);
+	});
+</script>
