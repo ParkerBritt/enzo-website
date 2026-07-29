@@ -4,6 +4,10 @@
 		<label class="terrain-label" for="terrain-phase">Sine Phase</label>
 		<input type="range" id="terrain-phase" class="terrain-slider" min="0" max="100" value="0" step="1" />
 	</div>
+	<div class="terrain-lights-scrub" title="Drag to change light count">
+		<span class="terrain-label">Instance Lights</span>
+		<span class="terrain-lights-value">1</span>
+	</div>
 </div>
 
 <style>
@@ -73,6 +77,28 @@
 		background: var(--color-accent);
 		border: 2px solid var(--color-panel);
 		box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 60%, transparent);
+	}
+
+	.terrain-lights-scrub {
+		position: absolute;
+		top: 10px;
+		right: 12px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		cursor: ew-resize;
+		user-select: none;
+		touch-action: none;
+		text-shadow: 1px 2px 2px color-mix(in srgb, black 45%, transparent);
+	}
+
+	.terrain-lights-value {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--color-accent);
+		min-width: 1ch;
+		text-align: right;
 	}
 </style>
 
@@ -187,7 +213,12 @@
 		return n * TERRAIN_HEIGHT;
 	}
 
-	function setup(canvas: HTMLCanvasElement, slider: HTMLInputElement) {
+	const LIGHTS_MIN = 0;
+	const LIGHTS_MAX = 20;
+	// Pixels of horizontal drag per light added/removed.
+	const LIGHTS_DRAG_STEP = 24;
+
+	function setup(canvas: HTMLCanvasElement, slider: HTMLInputElement, lightsScrub: HTMLElement) {
 		const scene = new THREE.Scene();
 
 		const geometry = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE, GRID, GRID);
@@ -232,11 +263,24 @@
 		scene.add(terrainGroup);
 
 		scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-		const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-		scene.add(sun);
 
-		const lightGizmo = createLightGizmo(new THREE.Color(0xffffff), 0.9, 1.1);
-		scene.add(lightGizmo.group);
+		// Lights sit evenly spaced around a circle, each aimed at the terrain's center.
+		type LightRig = { sun: THREE.DirectionalLight; gizmo: ReturnType<typeof createLightGizmo> };
+		let lightRigs: LightRig[] = [];
+
+		function setLightCount(count: number) {
+			for (const rig of lightRigs) {
+				scene.remove(rig.sun, rig.gizmo.group);
+			}
+			lightRigs = [];
+			for (let i = 0; i < count; i++) {
+				const sun = new THREE.DirectionalLight(0xffffff, 1.2 / count + 0.3);
+				const gizmo = createLightGizmo(new THREE.Color(0xffffff), 0.9, 1.1);
+				scene.add(sun, gizmo.group);
+				lightRigs.push({ sun, gizmo });
+			}
+		}
+		setLightCount(1);
 
 		const cameraGizmo = createGizmo(colorHigh, 1.1, 0.75, -1.4);
 		scene.add(cameraGizmo.group);
@@ -275,18 +319,22 @@
 			const phase = t * 4;
 			applyTerrain(phase);
 
-			// Light: the sun holds a fixed heading and only its height wanders. It reads
-			// the terrain function at its own spot, so it rises and falls with the ground.
-			const sunX = Math.cos(LIGHT_ANGLE) * ORBIT_RADIUS;
-			const sunZ = Math.sin(LIGHT_ANGLE) * ORBIT_RADIUS;
-			const sunPosition = new THREE.Vector3(
-				sunX,
-				LIGHT_HEIGHT + terrainHeight(sunX, sunZ, phase) * LIGHT_HEIGHT_SWING,
-				sunZ,
-			);
-			sun.position.copy(sunPosition);
-			lightGizmo.group.position.copy(sunPosition);
-			lightGizmo.group.lookAt(0, 0, 0);
+			// Lights: each holds a fixed heading around the circle and only its height
+			// wanders. It reads the terrain function at its own spot, so it rises and
+			// falls with the ground, and always points back at the center.
+			lightRigs.forEach(({ sun, gizmo }, i) => {
+				const angle = LIGHT_ANGLE + (i * Math.PI * 2) / lightRigs.length;
+				const sunX = Math.cos(angle) * ORBIT_RADIUS;
+				const sunZ = Math.sin(angle) * ORBIT_RADIUS;
+				const sunPosition = new THREE.Vector3(
+					sunX,
+					LIGHT_HEIGHT + terrainHeight(sunX, sunZ, phase) * LIGHT_HEIGHT_SWING,
+					sunZ,
+				);
+				sun.position.copy(sunPosition);
+				gizmo.group.position.copy(sunPosition);
+				gizmo.group.lookAt(0, 0, 0);
+			});
 
 			// Camera: the gizmo holds its spot, swung a quarter turn off the render
 			// camera's diagonal so it is seen from the side rather than head-on. Only
@@ -307,11 +355,35 @@
 		resizeObserver.observe(canvas);
 
 		slider.addEventListener("input", render);
+
+		const lightsValue = lightsScrub.querySelector<HTMLElement>(".terrain-lights-value")!;
+		let lightCount = LIGHTS_MIN;
+		let dragStartX = 0;
+		let dragStartCount = lightCount;
+
+		lightsScrub.addEventListener("pointerdown", (e) => {
+			lightsScrub.setPointerCapture(e.pointerId);
+			dragStartX = e.clientX;
+			dragStartCount = lightCount;
+		});
+		lightsScrub.addEventListener("pointermove", (e) => {
+			if (!lightsScrub.hasPointerCapture(e.pointerId)) return;
+			const delta = Math.round((e.clientX - dragStartX) / LIGHTS_DRAG_STEP);
+			const next = THREE.MathUtils.clamp(dragStartCount + delta, LIGHTS_MIN, LIGHTS_MAX);
+			if (next === lightCount) return;
+			lightCount = next;
+			lightsValue.textContent = String(lightCount);
+			setLightCount(lightCount);
+			render();
+		});
+
 		render();
 	}
 
 	document.querySelectorAll<HTMLCanvasElement>(".terrain-canvas").forEach((canvas) => {
-		const slider = canvas.parentElement?.querySelector<HTMLInputElement>(".terrain-slider");
-		if (slider) setup(canvas, slider);
+		const graphic = canvas.parentElement;
+		const slider = graphic?.querySelector<HTMLInputElement>(".terrain-slider");
+		const lightsScrub = graphic?.querySelector<HTMLElement>(".terrain-lights-scrub");
+		if (slider && lightsScrub) setup(canvas, slider, lightsScrub);
 	});
 </script>
