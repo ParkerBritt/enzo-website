@@ -1,12 +1,9 @@
 ---
-import { readFileSync } from "node:fs";
 import { Icon } from "astro-icon/components";
+import rawLogoSvg from "../../public/icons/enzo.svg?raw";
 
 // Inline the mark so it can be recolored with currentColor like the lucide icons.
-const logoSvg = readFileSync(new URL("../../public/icons/enzo.svg", import.meta.url), "utf-8").replace(
-	/fill="#fefefe"/i,
-	'fill="currentColor"',
-);
+const logoSvg = rawLogoSvg.replace(/fill="#fefefe"/i, 'fill="currentColor"');
 
 const windows = [
 	{ id: "game", title: "Game Engine" },
