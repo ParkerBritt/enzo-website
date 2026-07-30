@@ -22,7 +22,7 @@ const dccAttrs = [70, 45, 65, 40, 75];
 <div class="carousel-graphic">
 	{
 		windows.map(({ id, title }, i) => (
-			<div class={`window window-${id}`} style={`animation-delay: ${-i * 3}s`}>
+			<div class={`window window-${id}`} style={`animation-delay: ${-i * 4.2}s`}>
 				<div class="window-bar">
 					<span class="dot dot-red" />
 					<span class="dot dot-yellow" />
@@ -84,7 +84,6 @@ const dccAttrs = [70, 45, 65, 40, 75];
 							</div>
 							<div class="dcc-viewport">
 								<svg class="dcc-gizmo" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round">
-									<rect x="1" y="1" width="10" height="10" stroke="color-mix(in srgb, white 30%, transparent)" />
 									<line x1="4" y1="20" x2="13" y2="11" stroke="#3b82f6" />
 									<line x1="4" y1="20" x2="18" y2="20" stroke="#ef4444" />
 									<line x1="4" y1="20" x2="4" y2="6" stroke="#22c55e" />
@@ -169,20 +168,35 @@ const dccAttrs = [70, 45, 65, 40, 75];
 		background: var(--color-bg);
 		box-shadow: 0 8px 20px color-mix(in srgb, black 25%, transparent);
 		z-index: 1;
-		animation: windowCycle 9s ease-in-out infinite;
+		animation: windowCycle 12.6s linear infinite;
 	}
 
+	/* A trip must end by 33.3% since the windows run a third of a cycle apart, so a longer hold needs a longer cycle. */
 	@keyframes windowCycle {
 		0% {
 			transform: translate(-50%, calc(-50% + 140%));
+			animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
 		}
-		8% {
+		1.4% {
+			transform: translate(-50%, calc(-50% + 152%));
+			animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+		}
+		7.1% {
+			transform: translate(-50%, calc(-50% - 7%));
+			animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		10% {
 			transform: translate(-50%, -50%);
 		}
-		25% {
+		28.3% {
 			transform: translate(-50%, -50%);
+			animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
 		}
-		33%,
+		29.8% {
+			transform: translate(-50%, calc(-50% + 7%));
+			animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+		}
+		33.3%,
 		100% {
 			transform: translate(-50%, calc(-50% - 140%));
 		}
