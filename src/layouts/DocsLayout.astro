@@ -46,7 +46,28 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		<ClientRouter />
 	</head>
 	<body>
-		<DocsHeader activeTab={activeTab} />
+		<DocsHeader activeTab={activeTab}>
+			{
+				activeTab === "Guide" && (
+					<nav slot="sidebar" class="docs-mobile-sidebar-nav">
+						{guideNav.map((group) => (
+							<details open>
+								<summary>{group.label}</summary>
+								<ul>
+									{group.items.map((item) => (
+										<li>
+											<a href={item.href} class:list={{ active: item.href === pathname }}>
+												{item.title}
+											</a>
+										</li>
+									))}
+								</ul>
+							</details>
+						))}
+					</nav>
+				)
+			}
+		</DocsHeader>
 
 		<div class:list={["docs-body", { "has-sidebar": activeTab === "Guide" }]}>
 			{
@@ -606,12 +627,9 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 	}
 
 	@media (max-width: 48rem) {
-		:global(:root) {
-			--docs-header-height: 7rem;
-		}
-
 		.docs-body {
 			flex-direction: column;
+			align-items: stretch;
 		}
 
 		.docs-body.has-sidebar {
@@ -619,16 +637,58 @@ const activeTab = pathname.startsWith("/docs/nodes") ? "Nodes" : pathname.starts
 		}
 
 		.docs-sidebar {
-			position: static;
-			width: 100%;
-			overflow: visible;
-			margin-inline: calc(-1 * var(--space-md));
-			border-right: none;
-			border-block: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+			display: none;
 		}
 
 		.docs-content {
 			max-width: none;
 		}
+	}
+
+	.docs-mobile-sidebar-nav summary {
+		cursor: pointer;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-muted);
+		padding: 0.4rem 0.5rem;
+		list-style: none;
+	}
+
+	.docs-mobile-sidebar-nav summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.docs-mobile-sidebar-nav summary::before {
+		content: "▾ ";
+	}
+
+	.docs-mobile-sidebar-nav details:not([open]) summary::before {
+		content: "▸ ";
+	}
+
+	.docs-mobile-sidebar-nav ul {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 var(--space-xs);
+	}
+
+	.docs-mobile-sidebar-nav a {
+		display: block;
+		padding: 0.4rem 0.6rem 0.4rem 1.25rem;
+		border-radius: 6px;
+		font-size: var(--text-sm);
+		color: var(--color-muted);
+		text-decoration: none;
+	}
+
+	.docs-mobile-sidebar-nav a:hover {
+		color: var(--color-text);
+	}
+
+	.docs-mobile-sidebar-nav a.active {
+		color: var(--color-text);
+		font-weight: 600;
 	}
 </style>

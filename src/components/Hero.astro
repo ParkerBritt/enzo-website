@@ -115,6 +115,7 @@
 		background: var(--color-panel);
 		color: var(--color-text);
 		cursor: pointer;
+		white-space: nowrap;
 	}
 
 	button:hover {
@@ -135,6 +136,11 @@
 	}
 
 	@media (max-width: 48rem) {
+		.hero {
+			padding-top: var(--space-lg);
+			padding-bottom: var(--space-lg);
+		}
+
 		.hero-grid {
 			grid-template-columns: 1fr;
 		}
@@ -143,6 +149,7 @@
 			width: 100%;
 			margin-right: 0;
 			transform: none;
+			aspect-ratio: 16 / 9;
 		}
 	}
 </style>

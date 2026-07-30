@@ -1,5 +1,6 @@
 ---
 import GithubIcon from "../assets/github.svg";
+import { Icon } from "astro-icon/components";
 import { DOCS_GUIDE_URL } from "../consts";
 
 const repoUrl = "https://github.com/parkerbritt/enzo";
@@ -11,24 +12,30 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
             <img src="/icons/enzo.svg" alt="Enzo" width="28" height="28" />
             <span>Enzo</span>
         </a>
-        <nav>
-            <a href="https://github.com/parkerbritt/enzo/releases/latest">Download</a>
-            <div class="docs-menu">
-                <a href={DOCS_GUIDE_URL}>Docs</a>
-                <div class="docs-dropdown">
-                    <a href={DOCS_GUIDE_URL}>User Guide</a>
-                    <a href="/docs/nodes">Nodes</a>
-                    <a href="/docs/daslang">Daslang</a>
-                    <a href="https://parkerbritt.github.io/enzo/annotated.html" target="_blank" rel="noopener">C++</a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+        <label for="nav-toggle" class="nav-toggle-label" aria-label="Menu">
+            <Icon name="lucide:menu" aria-hidden="true" />
+        </label>
+        <div class="nav-panel">
+            <nav>
+                <a href="https://github.com/parkerbritt/enzo/releases/latest">Download</a>
+                <div class="docs-menu">
+                    <a href={DOCS_GUIDE_URL}>Docs</a>
+                    <div class="docs-dropdown">
+                        <a href={DOCS_GUIDE_URL}>User Guide</a>
+                        <a href="/docs/nodes">Nodes</a>
+                        <a href="/docs/daslang">Daslang</a>
+                        <a href="https://parkerbritt.github.io/enzo/annotated.html" target="_blank" rel="noopener">C++</a>
+                    </div>
                 </div>
-            </div>
-            <a href="/#features">Features</a>
-            <a href="/#roadmap">Roadmap</a>
-        </nav>
-        <a class="source" href={repoUrl} target="_blank" rel="noopener">
-            <GithubIcon width={18} height={18} aria-hidden="true" />
-            <span>Source Code</span>
-        </a>
+                <a href="/#features">Features</a>
+                <a href="/#roadmap">Roadmap</a>
+            </nav>
+            <a class="source" href={repoUrl} target="_blank" rel="noopener">
+                <GithubIcon width={18} height={18} aria-hidden="true" />
+                <span>Source Code</span>
+            </a>
+        </div>
     </div>
 </header>
 
@@ -38,6 +45,14 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
 		top: 0;
 		z-index: 10;
 		padding-block: var(--space-sm);
+	}
+
+	/* The bar's blur lives on its own layer so it stays a sibling of the mobile nav panel, which cannot blur inside a blurred ancestor. */
+	.site-header::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
 		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
 		backdrop-filter: blur(12px);
 	}
@@ -52,6 +67,22 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
 		align-items: center;
 	}
 
+	.nav-panel {
+		display: contents;
+	}
+
+	.nav-toggle {
+		display: none;
+	}
+
+	.nav-toggle-label {
+		display: none;
+		justify-self: end;
+		padding: var(--space-xs);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
 	.brand {
 		display: flex;
 		align-items: center;
@@ -64,6 +95,7 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
 	nav {
 		display: flex;
 		justify-content: center;
+		align-items: center;
 		gap: var(--space-md);
 	}
 
@@ -144,5 +176,82 @@ const repoUrl = "https://github.com/parkerbritt/enzo";
 	.source:hover {
 		border-color: color-mix(in srgb, var(--color-text) 15%, transparent);
 		background: color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	/* Between the mobile menu and full desktop width, the "Source Code" label
+	   makes the outer grid columns wide enough to push the centered nav off
+	   to one side, so collapse it down to just the icon. */
+	@media (min-width: 641px) and (max-width: 860px) {
+		.source span {
+			display: none;
+		}
+
+		.source {
+			padding: var(--space-xs);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.header-inner {
+			grid-template-columns: 1fr auto;
+		}
+
+		.nav-toggle-label {
+			display: flex;
+		}
+
+		.nav-panel {
+			display: block;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+			backdrop-filter: blur(12px);
+			border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+			max-height: 0;
+			overflow-y: auto;
+			visibility: hidden;
+			transition: max-height 0.2s ease, visibility 0.2s ease;
+		}
+
+		.nav-toggle:checked ~ .nav-panel {
+			max-height: min(32rem, calc(100vh - 5rem));
+			visibility: visible;
+		}
+
+		nav {
+			flex-direction: column;
+			justify-content: flex-start;
+			align-items: stretch;
+			gap: 0;
+			padding: var(--space-sm);
+		}
+
+		nav a {
+			padding: var(--space-sm) var(--space-xs);
+		}
+
+		.docs-menu {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.docs-dropdown {
+			position: static;
+			opacity: 1;
+			visibility: visible;
+			transform: none;
+			border: none;
+			box-shadow: none;
+			background: transparent;
+			padding-left: var(--space-md);
+			margin-top: 0;
+		}
+
+		.source {
+			justify-content: center;
+			margin: 0 var(--space-sm) var(--space-sm);
+		}
 	}
 </style>

@@ -189,11 +189,20 @@ const features = [
 	@media (max-width: 48rem) {
 		.feature-row {
 			grid-template-columns: 1fr;
+			justify-items: center;
 		}
 
 		/* Keep copy above the screenshot on every row when stacked. */
 		.feature-row:nth-child(even) .feature-copy {
 			order: 0;
+		}
+
+		.feature-copy,
+		.feature-row:nth-child(even) .feature-copy,
+		.feature-media,
+		.feature-row:nth-child(even) .feature-media {
+			justify-self: center;
+			text-align: center;
 		}
 	}
 

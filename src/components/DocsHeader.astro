@@ -27,46 +27,62 @@ const tabs = [
 			<span>Enzo</span>
 		</a>
 
-		<nav class="docs-tabs">
-			{
-				tabs.map((tab) => {
-					if (tab.kind === "soon") {
+		<input type="checkbox" id="docs-nav-toggle" class="nav-toggle" />
+		<label for="docs-nav-toggle" class="nav-toggle-label" aria-label="Menu">
+			<Icon name="lucide:menu" aria-hidden="true" />
+		</label>
+
+		<div class="docs-nav-panel">
+			<nav class="docs-tabs">
+				{
+					tabs.map((tab) => {
+						if (tab.kind === "soon") {
+							return (
+								<span class="docs-tab soon">
+									<Icon name={tab.icon} size={16} aria-hidden="true" />
+									{tab.label}
+									<span class="soon-badge">Soon</span>
+								</span>
+							);
+						}
+						if (tab.kind === "external") {
+							return (
+								<a class="docs-tab" href={tab.href} target="_blank" rel="noopener">
+									<Icon name={tab.icon} size={16} aria-hidden="true" />
+									{tab.label} <span class="ext">↗</span>
+								</a>
+							);
+						}
 						return (
-							<span class="docs-tab soon">
+							<a class:list={["docs-tab", { active: tab.label === activeTab }]} href={tab.href}>
 								<Icon name={tab.icon} size={16} aria-hidden="true" />
 								{tab.label}
-								<span class="soon-badge">Soon</span>
-							</span>
-						);
-					}
-					if (tab.kind === "external") {
-						return (
-							<a class="docs-tab" href={tab.href} target="_blank" rel="noopener">
-								<Icon name={tab.icon} size={16} aria-hidden="true" />
-								{tab.label} <span class="ext">↗</span>
 							</a>
 						);
-					}
-					return (
-						<a class:list={["docs-tab", { active: tab.label === activeTab }]} href={tab.href}>
-							<Icon name={tab.icon} size={16} aria-hidden="true" />
-							{tab.label}
-						</a>
-					);
-				})
-			}
-		</nav>
+					})
+				}
+			</nav>
 
-		<div class="docs-header-actions">
+			{
+				Astro.slots.has("sidebar") && (
+					<div class="docs-sidebar-slot">
+						<slot name="sidebar" />
+					</div>
+				)
+			}
+
+			<div class="docs-header-actions">
             <!-- TODO: add search functionality -->
-			<!-- <div class="docs-search"> -->
-			<!-- 	<Icon name="lucide:search" class="icon" size={16} aria-hidden="true" /> -->
-			<!-- 	<input type="text" placeholder="Search all docs…" disabled /> -->
-			<!--              <span class="kbd">/</span> -->
-			<!-- </div> -->
-			<a class="source" href={repoUrl} target="_blank" rel="noopener" aria-label="Source code">
-				<GithubIcon width={18} height={18} aria-hidden="true" />
-			</a>
+				<!-- <div class="docs-search"> -->
+				<!-- 	<Icon name="lucide:search" class="icon" size={16} aria-hidden="true" /> -->
+				<!-- 	<input type="text" placeholder="Search all docs…" disabled /> -->
+				<!--              <span class="kbd">/</span> -->
+				<!-- </div> -->
+				<a class="source" href={repoUrl} target="_blank" rel="noopener" aria-label="Source code">
+					<GithubIcon width={18} height={18} aria-hidden="true" />
+					<span>Source Code</span>
+				</a>
+			</div>
 		</div>
 	</div>
 </header>
@@ -79,9 +95,17 @@ const tabs = [
 		right: 0;
 		z-index: 10;
 		height: var(--docs-header-height, 4.75rem);
+		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+	}
+
+	/* The bar's blur lives on its own layer so it stays a sibling of the mobile nav panel, which cannot blur inside a blurred ancestor. */
+	.docs-header::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
 		background: color-mix(in srgb, var(--color-bg) 70%, transparent);
 		backdrop-filter: blur(12px);
-		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
 	}
 
 	.docs-header-inner {
@@ -95,6 +119,22 @@ const tabs = [
 		align-items: center;
 	}
 
+	.docs-nav-panel {
+		display: contents;
+	}
+
+	.nav-toggle {
+		display: none;
+	}
+
+	.nav-toggle-label {
+		display: none;
+		justify-self: end;
+		padding: var(--space-xs);
+		color: var(--color-text);
+		cursor: pointer;
+	}
+
 	.brand {
 		display: flex;
 		align-items: center;
@@ -103,6 +143,10 @@ const tabs = [
 		font-weight: 700;
 		text-decoration: none;
 		flex-shrink: 0;
+	}
+
+	.docs-sidebar-slot {
+		display: none;
 	}
 
 	.docs-tabs {
@@ -205,12 +249,19 @@ const tabs = [
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		gap: var(--space-xs);
 		width: 2.25rem;
 		height: 2.25rem;
 		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
 		border-radius: 8px;
 		background: color-mix(in srgb, var(--color-text) 6%, transparent);
 		color: var(--color-text);
+		text-decoration: none;
+		font-size: var(--text-sm);
+	}
+
+	.source span {
+		display: none;
 	}
 
 	.source:hover {
@@ -225,23 +276,68 @@ const tabs = [
 	}
 
 	@media (max-width: 48rem) {
-		.docs-header {
-			height: auto;
-			padding-block: var(--space-sm);
-		}
 		.docs-header-inner {
-			height: auto;
+			grid-template-columns: 1fr auto;
+		}
+
+		.nav-toggle-label {
 			display: flex;
-			flex-wrap: wrap;
-			gap: var(--space-sm);
 		}
+
+		.docs-nav-panel {
+			display: block;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+			backdrop-filter: blur(12px);
+			border-bottom: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+			max-height: 0;
+			overflow-y: auto;
+			visibility: hidden;
+			transition: max-height 0.2s ease, visibility 0.2s ease;
+		}
+
+		.nav-toggle:checked ~ .docs-nav-panel {
+			max-height: calc(100vh - var(--docs-header-height, 4.75rem));
+			visibility: visible;
+		}
+
 		.docs-tabs {
-			order: 3;
-			width: 100%;
-			overflow-x: auto;
+			flex-direction: column;
+			align-items: stretch;
 			height: auto;
-			padding-bottom: var(--space-xs);
+			gap: 0;
+			padding: var(--space-sm);
 		}
+
+		.docs-tab {
+			padding: var(--space-sm) var(--space-xs);
+			border-bottom: none;
+		}
+
+		.docs-sidebar-slot {
+			display: block;
+			padding: var(--space-sm) var(--space-sm) var(--space-sm);
+			border-top: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+		}
+
+		.docs-header-actions {
+			justify-content: center;
+			padding: 0 var(--space-sm) var(--space-sm);
+		}
+
+		.source {
+			width: auto;
+			height: auto;
+			padding: var(--space-xs) var(--space-sm);
+		}
+
+		.source span {
+			display: inline;
+		}
+
 		.docs-search {
 			width: auto;
 			flex: 1;
