@@ -2,17 +2,70 @@
 import Layout from "../layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
 
-const windowsFormats = [
-	{ id: "msi", label: "msi installer", size: "44 MB", icon: "lucide:package" },
-	{ id: "zip", label: "zip portable", size: "42 MB", icon: "lucide:file-archive" },
+const RELEASES_URL = "https://github.com/parkerbritt/enzo/releases";
+
+type ReleaseAsset = { name: string; size: number; browser_download_url: string };
+type Release = { tag_name: string; html_url: string; assets: ReleaseAsset[] };
+
+/** Returns the latest enzo release, or null when the request fails. */
+async function fetchLatestRelease(): Promise<Release | null> {
+	try {
+		const res = await fetch("https://api.github.com/repos/parkerbritt/enzo/releases/latest", {
+			headers: { Accept: "application/vnd.github+json" },
+		});
+		if (!res.ok) throw new Error(`GitHub API responded ${res.status}`);
+		return await res.json();
+	} catch (err) {
+		console.warn(`Could not fetch the latest enzo release, download links point at the releases page. ${err}`);
+		return null;
+	}
+}
+
+const release = await fetchLatestRelease();
+const version = release?.tag_name ?? "latest";
+
+/** Returns the download link and size for the release file whose name ends with the given suffix. */
+function findAsset(suffix: string) {
+	const asset = release?.assets.find((a) => a.name.endsWith(suffix));
+	if (!asset) return { url: `${RELEASES_URL}/latest`, size: "" };
+	return { url: asset.browser_download_url, size: `${Math.round(asset.size / 1024 / 1024)} MB` };
+}
+
+// Lists the platforms offered for download. The first is shown until the visitor's system is detected.
+const platforms = [
+	{
+		id: "windows",
+		name: "Windows",
+		icon: "simple-icons:windows",
+		recommended: "msi",
+		formats: [
+			{ id: "msi", label: "msi installer", icon: "lucide:package", ...findAsset("-windows-AMD64.msi") },
+			{ id: "zip", label: "zip portable", icon: "lucide:file-archive", ...findAsset("-windows-AMD64.zip") },
+		],
+	},
+	{
+		id: "linux",
+		name: "Linux",
+		icon: "simple-icons:linux",
+		recommended: "targz",
+		formats: [
+			{ id: "appimage", label: "AppImage", icon: "lucide:app-window", ...findAsset("-linux-x86_64.AppImage") },
+			{ id: "targz", label: "tar.gz", icon: "lucide:file-archive", ...findAsset("-linux-x86_64.tar.gz") },
+			{ id: "deb", label: "deb", icon: "lucide:package", ...findAsset("-linux-x86_64.deb") },
+			{ id: "rpm", label: "rpm", icon: "lucide:package", ...findAsset("-linux-x86_64.rpm") },
+		],
+	},
 ];
 
-const linuxFormats = [
-	{ id: "appimage", label: "AppImage", size: "47 MB", icon: "lucide:app-window" },
-	{ id: "targz", label: "tar.gz", size: "46 MB", icon: "lucide:file-archive" },
-	{ id: "deb", label: "deb", size: "45 MB", icon: "lucide:package" },
-	{ id: "rpm", label: "rpm", size: "45 MB", icon: "lucide:package" },
-];
+// Maps each platform id to the download the main button offers.
+const mainDownloads = Object.fromEntries(
+	platforms.map((p) => {
+		const format = p.formats.find((f) => f.id === p.recommended)!;
+		const meta = [version, format.label, format.size].filter(Boolean).join(" · ");
+		return [p.id, { url: format.url, name: p.name, meta }];
+	}),
+);
+const initial = mainDownloads[platforms[0].id];
 ---
 
 <Layout title="Download Enzo">
@@ -27,12 +80,17 @@ const linuxFormats = [
 			</div>
 
 			<div class="download-inner">
-				<div class="dl-main-wrap" data-dl-root>
-					<a href="#" class="dl-main">
+				<div class="dl-main-wrap" data-dl-root data-downloads={JSON.stringify(mainDownloads)}>
+					<a href={initial.url} class="dl-main" data-field="url">
 						<span class="dl-icon"><Icon name="lucide:download" /></span>
-						<span class="dl-title">Download for <span data-field="osName">Windows</span></span>
+						<span class="dl-title">Download for <span data-field="name">{initial.name}</span></span>
 					</a>
-					<p class="dl-meta"><Icon name="simple-icons:linux" /> v0.1.0-alpha · <span data-field="formatLabel"></span> · <span data-field="formatSize"></span></p>
+					<p class="dl-meta">
+						{platforms.map((p, i) => (
+							<span class="dl-os-icon" data-os-icon={p.id} hidden={i > 0}><Icon name={p.icon} /></span>
+						))}
+						<span data-field="meta">{initial.meta}</span>
+					</p>
 				</div>
 				<a href="#" class="source-link">Build from source →</a>
 			</div>
@@ -42,33 +100,24 @@ const linuxFormats = [
 			<div class="section-inner">
 				<h2 class="section-label">RELEASES</h2>
 				<div class="releases-grid">
-					<div class="release-card build-card">
-						<h3><Icon name="simple-icons:windows" /> Windows</h3>
-						<div class="builds-rows">
-							{windowsFormats.map((f) => (
-								<div class="build-row">
-									<span class="build-label"><Icon name={f.icon} /> {f.label}</span>
-									<span class="build-download" aria-hidden="true"><Icon name="lucide:download" /></span>
-								</div>
-							))}
+					{platforms.map((p) => (
+						<div class="release-card build-card">
+							<h3><Icon name={p.icon} /> {p.name}</h3>
+							<div class="builds-rows">
+								{p.formats.map((f) => (
+									<a href={f.url} class="build-row">
+										<span class="build-label"><Icon name={f.icon} /> {f.label}</span>
+										<span class="build-download" aria-hidden="true"><Icon name="lucide:download" /></span>
+									</a>
+								))}
+							</div>
 						</div>
-					</div>
-					<div class="release-card build-card">
-						<h3><Icon name="simple-icons:linux" /> Linux</h3>
-						<div class="builds-rows">
-							{linuxFormats.map((f) => (
-								<div class="build-row">
-									<span class="build-label"><Icon name={f.icon} /> {f.label}</span>
-									<span class="build-download" aria-hidden="true"><Icon name="lucide:download" /></span>
-								</div>
-							))}
-						</div>
-					</div>
-					<a href="https://github.com/parkerbritt/enzo/releases/latest" target="_blank" rel="noopener" class="release-card">
+					))}
+					<a href={release?.html_url ?? `${RELEASES_URL}/latest`} target="_blank" rel="noopener" class="release-card">
 						<h3><Icon name="lucide:file-text" /> Release notes</h3>
-						<p>See what changed in v0.1.0-alpha.</p>
+						<p>See what changed in {version}.</p>
 					</a>
-					<a href="https://github.com/parkerbritt/enzo/releases" target="_blank" rel="noopener" class="release-card">
+					<a href={RELEASES_URL} target="_blank" rel="noopener" class="release-card">
 						<h3><Icon name="lucide:history" /> All versions</h3>
 						<p>Browse every release, including older builds.</p>
 					</a>
@@ -215,6 +264,14 @@ const linuxFormats = [
 		font-family: var(--font-mono);
 	}
 
+	.dl-os-icon {
+		display: flex;
+	}
+
+	.dl-os-icon[hidden] {
+		display: none;
+	}
+
 	.dl-meta :global(svg) {
 		width: 13px;
 		height: 13px;
@@ -299,7 +356,8 @@ const linuxFormats = [
 		padding-block: 0.5rem;
 		border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
 		font-size: var(--text-sm);
-		cursor: pointer;
+		color: var(--color-text);
+		text-decoration: none;
 	}
 
 	.build-label {
@@ -390,26 +448,21 @@ const linuxFormats = [
 </style>
 
 <script>
-	// Kept in sync with the recommended entry in windowsFormats/linuxFormats above.
-	const RECOMMENDED = {
-		windows: { label: "msi installer", size: "44 MB" },
-		linux: { label: "tar.gz", size: "46 MB" },
-	};
-
 	const root = document.querySelector<HTMLElement>("[data-dl-root]");
 	if (root) {
-		const osNameEl = root.querySelector<HTMLElement>('[data-field="osName"]')!;
-		const formatLabelEl = root.querySelector<HTMLElement>('[data-field="formatLabel"]')!;
-		const formatSizeEl = root.querySelector<HTMLElement>('[data-field="formatSize"]')!;
-
 		const detectOS = (): "windows" | "linux" => {
 			const ua = `${navigator.userAgent} ${navigator.platform}`;
 			return /linux/i.test(ua) && !/android/i.test(ua) ? "linux" : "windows";
 		};
 
+		// Points the main button at the recommended download for this system.
 		const os = detectOS();
-		osNameEl.textContent = os === "linux" ? "Linux" : "Windows";
-		formatLabelEl.textContent = RECOMMENDED[os].label;
-		formatSizeEl.textContent = RECOMMENDED[os].size;
+		const download: { url: string; name: string; meta: string } = JSON.parse(root.dataset.downloads!)[os];
+		root.querySelector<HTMLAnchorElement>('[data-field="url"]')!.href = download.url;
+		root.querySelector<HTMLElement>('[data-field="name"]')!.textContent = download.name;
+		root.querySelector<HTMLElement>('[data-field="meta"]')!.textContent = download.meta;
+		root.querySelectorAll<HTMLElement>("[data-os-icon]").forEach((el) => {
+			el.hidden = el.dataset.osIcon !== os;
+		});
 	}
 </script>
