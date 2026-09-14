@@ -228,6 +228,8 @@ const initial = mainDownloads[platforms[0].id];
 	}
 
 	.dl-main {
+		position: relative;
+		z-index: 1000;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -238,6 +240,27 @@ const initial = mainDownloads[platforms[0].id];
 		color: #fff;
 		min-width: 19rem;
 		text-decoration: none;
+		transition: transform 0.15s ease;
+	}
+
+	.dl-main:hover {
+		transform: scale(1.02);
+	}
+
+	.dl-main.dl-pop {
+		animation: dl-pop 0.4s ease;
+	}
+
+	@keyframes dl-pop {
+		0% {
+			transform: scale(1);
+		}
+		35% {
+			transform: scale(1.08);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 
 	.dl-icon {
@@ -464,5 +487,85 @@ const initial = mainDownloads[platforms[0].id];
 		root.querySelectorAll<HTMLElement>("[data-os-icon]").forEach((el) => {
 			el.hidden = el.dataset.osIcon !== os;
 		});
+
+		const mainButton = root.querySelector<HTMLAnchorElement>(".dl-main")!;
+		mainButton.addEventListener("click", () => {
+			mainButton.classList.remove("dl-pop");
+			// Restart the animation even if it's already mid-run.
+			void mainButton.offsetWidth;
+			mainButton.classList.add("dl-pop");
+			burstConfetti(mainButton);
+		});
+	}
+
+	/** Fires a canvas confetti burst from the center of the given element. */
+	function burstConfetti(origin: HTMLElement) {
+		const colors = ["#f94144", "#f9c74f", "#90be6d", "#577590", "#f3722c", "#43aa8b"];
+		const rect = origin.getBoundingClientRect();
+		const originX = rect.left + rect.width / 2;
+		const originY = rect.top + rect.height / 2;
+
+		const canvas = document.createElement("canvas");
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		canvas.style.position = "fixed";
+		canvas.style.inset = "0";
+		canvas.style.pointerEvents = "none";
+		canvas.style.zIndex = "999"; // Stays under the button (z-index 1000) so the confetti passes behind it.
+		// Placed inside .hero, which owns its own stacking context (position: relative; z-index: 1) —
+		// appending to body would compare the canvas against that whole context instead of the button.
+		(origin.closest<HTMLElement>(".hero") ?? document.body).appendChild(canvas);
+		const ctx = canvas.getContext("2d")!;
+
+		const gravity = 0.18;
+		const drag = 0.994;
+		const particles = Array.from({ length: 90 }, () => {
+			const angle = Math.random() * Math.PI * 2;
+			const speed = 4 + Math.random() * 9;
+			return {
+				x: originX,
+				y: originY,
+				vx: Math.cos(angle) * speed,
+				vy: Math.sin(angle) * speed - 4,
+				size: 5 + Math.random() * 5,
+				color: colors[Math.floor(Math.random() * colors.length)],
+				rotation: Math.random() * Math.PI * 2,
+				rotationSpeed: (Math.random() - 0.5) * 0.3,
+				life: 0,
+				maxLife: 60 + Math.random() * 30,
+			};
+		});
+
+		let frame: number;
+		const tick = () => {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			let alive = false;
+			for (const p of particles) {
+				p.life++;
+				if (p.life > p.maxLife) continue;
+				alive = true;
+				p.vx *= drag;
+				p.vy = p.vy * drag + gravity;
+				p.x += p.vx;
+				p.y += p.vy;
+				p.rotation += p.rotationSpeed;
+
+				const fade = 1 - p.life / p.maxLife;
+				ctx.save();
+				ctx.globalAlpha = fade;
+				ctx.translate(p.x, p.y);
+				ctx.rotate(p.rotation);
+				ctx.fillStyle = p.color;
+				ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+				ctx.restore();
+			}
+			if (alive) {
+				frame = requestAnimationFrame(tick);
+			} else {
+				cancelAnimationFrame(frame);
+				canvas.remove();
+			}
+		};
+		frame = requestAnimationFrame(tick);
 	}
 </script>
