@@ -1,0 +1,433 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+
+const windowsFormats = [
+	{ id: "msi", label: "msi installer", size: "44 MB", recommended: true },
+	{ id: "zip", label: "zip portable", size: "42 MB", recommended: false },
+];
+
+const linuxFormats = [
+	{ id: "targz", label: "tar.gz", size: "46 MB", recommended: true },
+	{ id: "deb", label: "deb", size: "45 MB", recommended: false },
+	{ id: "rpm", label: "rpm", size: "45 MB", recommended: false },
+	{ id: "flatpak", label: "flatpak", size: "50 MB", recommended: false },
+	{ id: "appimage", label: "AppImage", size: "47 MB", recommended: false },
+];
+---
+
+<Layout title="Download Enzo">
+	<main>
+		<div class="hero">
+			<div class="hero-backdrop-clip">
+				<div class="hero-backdrop"></div>
+			</div>
+			<div class="hero-inner">
+				<h1>Download Enzo</h1>
+				<p>Free and open source procedural modelling.</p>
+			</div>
+
+			<div class="download-inner">
+				<div class="dl-main-wrap" data-dl-root>
+					<a href="#" class="dl-main">
+						<span class="dl-icon"><Icon name="simple-icons:linux" /></span>
+						<span class="dl-text">
+							<span class="dl-title">Download for <span data-field="osName">Windows</span></span>
+							<span class="dl-meta">v0.1.0-alpha · <span data-field="formatLabel"></span> · <span data-field="formatSize"></span></span>
+						</span>
+					</a>
+					<button type="button" class="dl-chev" data-dl-toggle aria-expanded="false" aria-label="Choose a different format">
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9 L12 15 L18 9"></path></svg>
+					</button>
+
+					<div class="dl-dropdown" data-dl-dropdown hidden>
+						<div class="dl-group-label">Windows</div>
+						{windowsFormats.map((f) => (
+							<button type="button" class="dl-row" data-os="windows" data-id={f.id} data-label={f.label} data-size={f.size} data-recommended={f.recommended}>
+								<span class="dl-row-label">{f.label}</span>
+								<span class="dl-row-size">{f.size}</span>
+							</button>
+						))}
+
+						<div class="dl-group-label">Linux</div>
+						{linuxFormats.map((f) => (
+							<button type="button" class="dl-row" data-os="linux" data-id={f.id} data-label={f.label} data-size={f.size} data-recommended={f.recommended}>
+								<span class="dl-row-label">{f.label}</span>
+								<span class="dl-row-size">{f.size}</span>
+							</button>
+						))}
+
+						<div class="dl-macos-row">
+							<span>macOS</span>
+							<span>not yet available</span>
+						</div>
+					</div>
+				</div>
+				<a href="#" class="source-link">Build from source →</a>
+			</div>
+		</div>
+
+		<section id="requirements">
+			<div class="section-inner">
+				<h2 class="section-label">SYSTEM REQUIREMENTS</h2>
+				<div class="requirements-grid">
+					<div class="requirement">
+						<h3>Windows</h3>
+						<ul>
+							<li>Windows 10 or 11, 64-bit</li>
+							<li>GPU supporting OpenGL 3.3</li>
+							<li>4 GB RAM minimum, 16 GB recommended</li>
+							<li>~500 MB disk space</li>
+						</ul>
+					</div>
+					<div class="requirement">
+						<h3>Linux</h3>
+						<ul>
+							<li>A modern 64-bit distro (Ubuntu 22.04+ or equivalent)</li>
+							<li>X11 or Wayland, GPU supporting OpenGL 3.3</li>
+							<li>4 GB RAM minimum, 16 GB recommended</li>
+							<li>~500 MB disk space</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	.hero {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* Clips only the blurred backdrop's bleed, so the dropdown (a sibling) can still overflow the hero and stack above later sections. */
+	.hero-backdrop-clip {
+		position: absolute;
+		inset: -12px;
+		z-index: -1;
+		overflow: clip;
+	}
+
+	.hero-backdrop {
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(180deg, color-mix(in srgb, var(--color-bg) 35%, transparent) 0%, color-mix(in srgb, var(--color-bg) 55%, transparent) 45%, var(--color-bg) 100%),
+			url("/images/download-hero-banner.png");
+		background-size: cover;
+		background-position: center 35%;
+		filter: blur(10px);
+	}
+
+	.hero-inner {
+		max-width: 70rem;
+		margin: 0 auto;
+		padding: var(--space-xl) var(--space-md) var(--space-xs);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: var(--space-xs);
+	}
+
+	.hero-inner h1 {
+		text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+	}
+
+	.hero-inner p {
+		margin: 0;
+		max-width: 30rem;
+		color: var(--color-bold);
+		text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5);
+	}
+
+	.download-inner {
+		max-width: 70rem;
+		margin: 0 auto;
+		padding: var(--space-md) var(--space-md) var(--space-xl);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-xs);
+	}
+
+	.dl-main-wrap {
+		display: flex;
+		align-items: stretch;
+		height: 4.25rem;
+		position: relative;
+	}
+
+	.dl-main {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		padding-inline: var(--space-md);
+		border-radius: 14px 0 0 14px;
+		background: var(--color-accent);
+		color: #fff;
+		min-width: 19rem;
+		text-decoration: none;
+	}
+
+	.dl-icon {
+		display: flex;
+		flex: none;
+	}
+
+	.dl-icon :global(svg) {
+		width: 20px;
+		height: 20px;
+	}
+
+	.dl-text {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		line-height: 1.2;
+		text-align: left;
+	}
+
+	.dl-title {
+		font-size: var(--text-lg);
+		font-weight: 700;
+	}
+
+	.dl-meta {
+		font-size: 0.8rem;
+		color: rgba(255, 255, 255, 0.8);
+		font-family: var(--font-mono);
+	}
+
+	.dl-chev {
+		width: 2.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 0 14px 14px 0;
+		background: var(--color-accent);
+		border: none;
+		border-left: 1px solid rgba(255, 255, 255, 0.22);
+		color: #fff;
+		cursor: pointer;
+	}
+
+	.dl-chev:hover {
+		background: color-mix(in srgb, var(--color-accent) 85%, white);
+	}
+
+	.dl-chev svg {
+		transition: transform 0.15s ease;
+	}
+
+	.dl-chev[aria-expanded="true"] svg {
+		transform: rotate(180deg);
+	}
+
+	.dl-dropdown {
+		position: absolute;
+		top: calc(100% + 10px);
+		right: 0;
+		width: 20rem;
+		background: var(--color-panel);
+		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		border-radius: 13px;
+		box-shadow: 0 22px 54px -18px rgba(0, 0, 0, 0.7);
+		z-index: 20;
+		padding: var(--space-xs);
+	}
+
+	.dl-group-label {
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-muted);
+		font-weight: 700;
+		padding: var(--space-xs) var(--space-xs) var(--space-xs);
+	}
+
+	.dl-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 0.55rem var(--space-xs);
+		border-radius: 8px;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		font: inherit;
+		text-align: left;
+	}
+
+	.dl-row:hover {
+		background: color-mix(in srgb, var(--color-text) 4.5%, transparent);
+	}
+
+	.dl-row.active {
+		background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+	}
+
+	.dl-row-label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		font-size: 0.8125rem;
+		color: var(--color-text);
+	}
+
+.dl-row-size {
+		font-size: 0.7rem;
+		color: var(--color-muted);
+		font-family: var(--font-mono);
+	}
+
+	.dl-macos-row {
+		margin-top: var(--space-xs);
+		padding: 0.55rem var(--space-xs);
+		border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 0.8125rem;
+		color: var(--color-muted);
+	}
+
+	.dl-macos-row span:last-child {
+		font-size: 0.7rem;
+		font-family: var(--font-mono);
+	}
+
+	.source-link {
+		font-size: 0.8125rem;
+		color: var(--color-muted);
+	}
+
+	main {
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	#requirements {
+		border-top: none;
+		flex: 1;
+		padding-top: var(--space-xl);
+	}
+
+	.requirements-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-md);
+		margin-top: var(--space-md);
+	}
+
+	.requirement h3 {
+		font-size: var(--text-sm);
+		font-weight: 600;
+		margin-bottom: var(--space-sm);
+	}
+
+	.requirement ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+	}
+
+	.requirement li {
+		font-size: var(--text-sm);
+		color: var(--color-muted);
+	}
+
+	.requirement + .requirement {
+		padding-left: var(--space-md);
+		border-left: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	@media (max-width: 40rem) {
+		.requirements-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.requirement + .requirement {
+			padding-left: 0;
+			border-left: none;
+			padding-top: var(--space-md);
+			border-top: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+		}
+
+		.dl-main {
+			min-width: 0;
+		}
+
+		.dl-dropdown {
+			width: 17rem;
+		}
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>("[data-dl-root]");
+	if (root) {
+		const toggle = root.querySelector<HTMLButtonElement>("[data-dl-toggle]")!;
+		const dropdown = root.querySelector<HTMLElement>("[data-dl-dropdown]")!;
+		const rows = Array.from(root.querySelectorAll<HTMLButtonElement>(".dl-row"));
+		const osNameEl = root.querySelector<HTMLElement>('[data-field="osName"]')!;
+		const formatLabelEl = root.querySelector<HTMLElement>('[data-field="formatLabel"]')!;
+		const formatSizeEl = root.querySelector<HTMLElement>('[data-field="formatSize"]')!;
+
+		const detectOS = (): "windows" | "linux" => {
+			const ua = `${navigator.userAgent} ${navigator.platform}`;
+			return /linux/i.test(ua) && !/android/i.test(ua) ? "linux" : "windows";
+		};
+
+		const os = detectOS();
+		const id = rows.find((r) => r.dataset.os === os && r.dataset.recommended === "true")?.dataset.id ?? rows[0].dataset.id!;
+
+		// Reflects the detected OS's recommended format on the main button. Picking a row in the
+		// dropdown downloads that format directly, it never changes this.
+		const render = () => {
+			const active = rows.find((r) => r.dataset.os === os && r.dataset.id === id) ?? rows[0];
+			osNameEl.textContent = os === "linux" ? "Linux" : "Windows";
+			formatLabelEl.textContent = active.dataset.label ?? "";
+			formatSizeEl.textContent = active.dataset.size ?? "";
+			for (const row of rows) {
+				row.classList.toggle("active", row === active);
+			}
+		};
+
+		const closeDropdown = () => {
+			dropdown.hidden = true;
+			toggle.setAttribute("aria-expanded", "false");
+		};
+
+		toggle.addEventListener("click", (e) => {
+			e.stopPropagation();
+			const willOpen = dropdown.hidden;
+			dropdown.hidden = !willOpen;
+			toggle.setAttribute("aria-expanded", String(willOpen));
+		});
+
+		for (const row of rows) {
+			row.addEventListener("click", () => {
+				// Not wired up yet, this will start that format's download.
+				closeDropdown();
+			});
+		}
+
+		document.addEventListener("click", (e) => {
+			if (!(e.target instanceof Node) || !root.contains(e.target)) closeDropdown();
+		});
+
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") closeDropdown();
+		});
+
+		render();
+	}
+</script>
