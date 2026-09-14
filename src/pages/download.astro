@@ -8,11 +8,10 @@ const windowsFormats = [
 ];
 
 const linuxFormats = [
+	{ id: "appimage", label: "AppImage", size: "47 MB", icon: "lucide:app-window" },
 	{ id: "targz", label: "tar.gz", size: "46 MB", icon: "lucide:file-archive" },
 	{ id: "deb", label: "deb", size: "45 MB", icon: "lucide:package" },
 	{ id: "rpm", label: "rpm", size: "45 MB", icon: "lucide:package" },
-	{ id: "flatpak", label: "flatpak", size: "50 MB", icon: "lucide:box" },
-	{ id: "appimage", label: "AppImage", size: "47 MB", icon: "lucide:app-window" },
 ];
 ---
 
@@ -273,6 +272,15 @@ const linuxFormats = [
 	.release-card h3 :global(svg) {
 		width: 14px;
 		height: 14px;
+	}
+
+	.build-card h3 {
+		gap: calc(var(--space-sm));
+	}
+
+	.build-card h3 :global(svg) {
+		width: 22px;
+		height: 22px;
 	}
 
 	.release-card p {
