@@ -37,8 +37,9 @@ const platforms = [
 		id: "windows",
 		name: "Windows",
 		icon: "simple-icons:windows",
-		recommended: "msi",
+		recommended: "exe",
 		formats: [
+			{ id: "exe", label: "exe installer", icon: "lucide:package", ...findAsset("-windows-AMD64.exe") },
 			{ id: "msi", label: "msi installer", icon: "lucide:package", ...findAsset("-windows-AMD64.msi") },
 			{ id: "zip", label: "zip portable", icon: "lucide:file-archive", ...findAsset("-windows-AMD64.zip") },
 		],
@@ -106,6 +107,16 @@ const initial = mainDownloads[platforms[0].id];
 						development than a bigger team could offer. Bug reports and patience are both very
 						appreciated.
 					</p>
+					<div class="dl-thanks-contact">
+						<span class="dl-thanks-contact-email">
+							<Icon name="lucide:mail" />
+							<span>parker@parkerbritt.com</span>
+						</span>
+						<a href="https://github.com/parkerbritt/enzo/issues" target="_blank" rel="noopener">
+							<Icon name="lucide:circle-dot" />
+							<span>Report an issue</span>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -364,6 +375,36 @@ const initial = mainDownloads[platforms[0].id];
 		font-size: var(--text-sm);
 		color: var(--color-muted);
 		text-align: justify;
+	}
+
+	.dl-thanks-contact {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-xs);
+		margin-top: var(--space-sm);
+		padding-top: var(--space-sm);
+		border-top: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+	}
+
+	.dl-thanks-contact a,
+	.dl-thanks-contact-email {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		font-size: var(--text-sm);
+		color: var(--color-muted);
+		text-decoration: none;
+	}
+
+	.dl-thanks-contact a:hover {
+		color: var(--color-text);
+	}
+
+	.dl-thanks-contact :global(svg) {
+		width: 14px;
+		height: 14px;
+		flex: none;
 	}
 
 	.dl-thanks-close {
