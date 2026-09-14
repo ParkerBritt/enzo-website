@@ -92,7 +92,6 @@ const initial = mainDownloads[platforms[0].id];
 						<span data-field="meta">{initial.meta}</span>
 					</p>
 				</div>
-				<a href="#" class="source-link">Build from source →</a>
 			</div>
 
 			<div class="dl-thanks-backdrop" data-dl-thanks hidden>
@@ -113,6 +112,7 @@ const initial = mainDownloads[platforms[0].id];
 
 		<section id="releases">
 			<div class="section-inner">
+				<p class="section-eyebrow">{version}</p>
 				<h2 class="section-label">RELEASES</h2>
 				<div class="releases-grid">
 					{platforms.map((p) => (
@@ -315,11 +315,6 @@ const initial = mainDownloads[platforms[0].id];
 		height: 13px;
 	}
 
-	.source-link {
-		font-size: 0.8125rem;
-		color: var(--color-muted);
-	}
-
 	.dl-thanks-backdrop {
 		position: fixed;
 		inset: 0;
@@ -407,6 +402,7 @@ const initial = mainDownloads[platforms[0].id];
 		border-top: none;
 		flex: 1;
 		padding-top: var(--space-xl);
+		padding-bottom: var(--space-xl);
 	}
 
 	.releases-grid {
@@ -414,6 +410,11 @@ const initial = mainDownloads[platforms[0].id];
 		grid-template-columns: 1fr 1fr;
 		gap: var(--space-md);
 		margin-top: var(--space-md);
+	}
+
+	.section-eyebrow {
+		font-family: var(--font-mono);
+		color: var(--color-muted);
 	}
 
 	.release-card {
