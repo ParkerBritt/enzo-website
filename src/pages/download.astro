@@ -1,8 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { Icon } from "astro-icon/components";
+import rawThumbsUpSvg from "../../public/icons/enzo_thumbs_up.svg?raw";
 
 const RELEASES_URL = "https://github.com/parkerbritt/enzo/releases";
+
+// Inline the mark without its backdrop so it can be recolored with currentColor like the lucide icons.
+const thumbsUpSvg = rawThumbsUpSvg
+	.replace(/<rect fill="#121212"[^>]*\/>/, "")
+	.replace(/fill="#fefefe"/i, 'fill="currentColor"');
 
 type ReleaseAsset = { name: string; size: number; browser_download_url: string };
 type Release = { tag_name: string; html_url: string; assets: ReleaseAsset[] };
@@ -100,12 +106,17 @@ const initial = mainDownloads[platforms[0].id];
 					<button type="button" class="dl-thanks-close" data-dl-thanks-close aria-label="Close">
 						<Icon name="lucide:x" />
 					</button>
-					<span class="dl-thanks-icon"><Icon name="lucide:sticker" /></span>
+					<span class="dl-thanks-icon"><Fragment set:html={thumbsUpSvg} /></span>
 					<h2 id="dl-thanks-title">Thank you for trying Enzo!</h2>
+					<div class="dl-thanks-note" role="note">
+						<p class="dl-thanks-note-title"><Icon name="lucide:info" />Early Alpha</p>
+						<p>
+                        Enzo is in Alpha, meaning it's an early incomplete preview.
+						</p>
+					</div>
 					<p>
-						Enzo is a small passion project mostly built by one person, so expect some bugs and slower
-						development than a bigger team could offer. Bug reports and patience are both very
-						appreciated.
+                    I develop Enzo as a passion project in my free time, so expect some bugs and slower development compared to teams with hundreds of developers.
+                    Bug reports and patience are both very appreciated.
 					</p>
 					<div class="dl-thanks-contact">
 						<span class="dl-thanks-contact-email">
@@ -342,7 +353,7 @@ const initial = mainDownloads[platforms[0].id];
 
 	.dl-thanks-modal {
 		position: relative;
-		max-width: 26rem;
+		max-width: 30rem;
 		width: 100%;
 		padding: var(--space-lg) var(--space-md) var(--space-md);
 		border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
@@ -354,8 +365,8 @@ const initial = mainDownloads[platforms[0].id];
 	.dl-thanks-icon {
 		display: flex;
 		justify-content: center;
-		width: 4.0rem;
-		height: 4.0rem;
+		width: 7.0rem;
+		height: 7.0rem;
 		margin: 0 auto var(--space-sm);
 		color: var(--color-accent);
 	}
@@ -377,10 +388,34 @@ const initial = mainDownloads[platforms[0].id];
 		text-align: justify;
 	}
 
+	.dl-thanks-note {
+		--note: var(--color-accent);
+		margin-bottom: var(--space-sm);
+		padding: 0.5rem 0.875rem;
+		border-left: 3px solid var(--note);
+		border-radius: 4px;
+		background: color-mix(in srgb, var(--note) 10%, transparent);
+	}
+
+	.dl-thanks-modal .dl-thanks-note p {
+		color: var(--color-text);
+		text-align: left;
+	}
+
+	.dl-thanks-modal .dl-thanks-note-title {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-bottom: 0.25rem;
+		font-weight: 600;
+		color: var(--note);
+	}
+
 	.dl-thanks-contact {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
 		align-items: center;
+        justify-content: space-between;
 		gap: var(--space-xs);
 		margin-top: var(--space-sm);
 		padding-top: var(--space-sm);
@@ -651,7 +686,7 @@ const initial = mainDownloads[platforms[0].id];
 			burstConfetti(mainButton);
 			// There's no way to detect whether the browser's save dialog was actually
 			// confirmed, so this assumes the download went through after a short delay.
-			window.setTimeout(showThanksModal, 2500);
+			window.setTimeout(showThanksModal, 400);
 		});
 	}
 
